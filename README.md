@@ -1,112 +1,34 @@
-# FiveM Vehicle Tool
+# FivemVehicleTool
 
-FiveM Vehicle Tool scans a folder that contains many separate vehicle resources and converts them into one organized `Vehicles` resource.
+> Werknaam. Mark kiest een nieuwe naam (lijst in [doc/decisions.md](doc/decisions.md), B17). Het in-game deel gaat `dev_<naam>` heten.
 
-The output structure is:
+Een all-in-one voertuigtool voor FiveM:
 
-```text
-Vehicles/
-  <category>/
-    stream/
-    meta/
-  fxmanifest.lua
-```
+- een in-game editor: voertuig spawnen en de handling aanpassen binnen "normale" grenzen, met een schakelaar om die grenzen uit te zetten;
+- een check op te grote textures en modellen (FiveM's "oversized assets"), en liefst een manier om ze te verkleinen;
+- controle van meta-bestanden op de regels en de naamgeving, met templates zodat waarden altijd op dezelfde manier staan en ontbrekende waarden uit een template komen;
+- een vaste mapstructuur voor voertuig-resources, ook met meerdere liveries.
 
-It automatically:
-- Detects vehicle categories (from `vehicles.meta` when possible)
-- Moves stream assets (`.yft`, `.ytd`, etc.) into category stream folders
-- Moves meta files into category meta folders
-- Prefixes meta filenames with the vehicle name to prevent filename collisions
-- Generates one central `Vehicles/fxmanifest.lua`
+**Fase: onderzoek.** Er wordt nog niets gebouwd.
 
-## Requirements
+## Wat staat waar
 
-- Python 3.10+ (recommended)
-- Windows/Linux/macOS
+| Map | Wat |
+|-----|-----|
+| [`doc/`](doc/README.md) | Alle documentatie (Nederlands). Begin bij `doc/README.md` |
+| [`research/scripts/`](research/scripts/README.md) | Scripts voor het onderzoek; ze lezen alleen |
+| [`archive/`](archive/README.md) | De eerste versie van deze repo (feb 2026), niet meer in gebruik |
 
-## Installation
+## Keuzes tot nu toe (21 okt 2026)
 
-1. Clone or download this repository.
-2. Open a terminal in the project folder.
-3. (Optional but recommended) Create and activate a virtual environment.
-4. Install dependencies:
+- Eén resource per voertuig, met de liveries erbij (B1)
+- Packs splitsen naar losse resources (B2)
+- Eén tool als het kan, anders twee (B3)
+- Volgorde: structuur en templates → manifest → textures → handling-editor (B12)
+- Alles wat in FiveM draait volgt Marks standaard: `dev_<naam>`, geen dependencies behalve oxmysql, framework-koppeling via bridge-haken, NUI in React + Vite (V1–V8)
 
-```bash
-pip install -r requirements.txt
-```
+Meer in [doc/decisions.md](doc/decisions.md).
 
-## Start the Application
+## Voertuigbestanden
 
-Run:
-
-```bash
-python main.py
-```
-
-The PyQt desktop interface will open.
-
-## How to Use
-
-1. **Select Input Folder**
-   - Choose the folder that contains your existing FiveM vehicle resources.
-   - Each resource should normally contain `fxmanifest.lua` or `__resource.lua`.
-
-2. **Select Output Folder**
-   - Choose where the tool should create the unified `Vehicles` folder.
-   - Example result path: `D:/exports/Vehicles`.
-
-3. **Scan**
-   - Click **Scan** to detect all vehicle resources.
-   - The tool reads stream/meta files and tries to detect category from `vehicles.meta`.
-
-4. **(Optional) Override Categories**
-   - Click **Categories override** to manually assign category values for incorrectly detected or unknown vehicles.
-
-5. **Choose Options**
-   - **Dry-run**: simulate organizing without writing files.
-   - **Backup**: create a zip backup of the source before writing.
-
-6. **Run Organizer**
-   - Use **Dry-run preview** first if you want to verify.
-   - Use **Organize** to write output files.
-
-## Output Details
-
-After organizing, you will get:
-
-- `Vehicles/<category>/stream/*` for stream/model files
-- `Vehicles/<category>/meta/*` for meta/xml files
-- `Vehicles/fxmanifest.lua` containing all data file registrations
-
-### Example
-
-```text
-Vehicles/
-  super/
-    stream/
-      ferrari_f40.yft
-      ferrari_f40.ytd
-    meta/
-      ferrari_f40_vehicles.meta
-      ferrari_f40_handling.meta
-      ferrari_f40_carcols.meta
-  sports/
-    stream/
-    meta/
-  fxmanifest.lua
-```
-
-## Notes
-
-- If multiple stream files have the same name, the tool uses safe renaming to avoid overwrites.
-- If category cannot be detected, vehicles are placed in `_unknown`.
-- If no recognized meta type is detected for a file, it is still copied but may not get a `data_file` entry in `fxmanifest.lua`.
-
-## Troubleshooting
-
-- If the app does not start, verify:
-  - `python --version`
-  - `pip install -r requirements.txt` completed without errors
-- If scan finds no resources:
-  - Confirm each resource has `fxmanifest.lua` or `__resource.lua`
-  - Confirm you selected the correct input root folder
+Voertuigen van anderen komen niet in deze repo: ze zijn niet van ons en te groot. `.gitignore` houdt `.yft`, `.ytd`, `.rpf` en dergelijke buiten git. Een testpakket staat alleen beschreven ([doc/test_pack.md](doc/test_pack.md)).
