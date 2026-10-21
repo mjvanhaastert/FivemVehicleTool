@@ -3,7 +3,7 @@
 Hoe een voertuig-resource op schijf staat, welke varianten we tegenkwamen, en hoe FiveM resources en `stream/` vindt.
 De labels staan uitgelegd in [README.md](README.md#labels).
 
-**Gekozen (Mark, 21 okt 2026): één resource per voertuig** (B1 in [decisions.md](decisions.md)). Liveries gaan mee in die resource, met een duidelijke indeling. Packs worden gesplitst (B2). Advies voor de indeling binnen de resource: §3 (B24, Mark kiest). Nog open: waar livery soort 4 heen gaat (B23, §2) en hoe een voertuig zijn naam krijgt (B26).
+**Gekozen (Mark, 21 okt 2026): één resource per voertuig** (B1 in [decisions.md](decisions.md)). Liveries gaan mee in die resource, met een duidelijke indeling. Packs worden gesplitst (B2). De indeling binnen de resource staat in §3: het voorstel, met de `modelName` als naam van de resource (B24, gekozen 21 okt). Livery soort 4 gaat in de resource van het basisvoertuig (B23), en de naam van het voertuig staat in het manifest (B26).
 
 ---
 
@@ -41,14 +41,14 @@ Wat opvalt:
 
 ## 2. Liveries: vier manieren, en wat dat voor de mappen betekent
 
-Mark vroeg (21 okt): "liveries horen bij 1 voertuig toch?" **Ja, voor soort 1, 2 en 3**: dat zijn uiterlijken van hetzelfde model, en ze gaan mee in de resource van dat voertuig. **Soort 4 niet**: dat is voor de game een apart voertuig met een eigen `modelName`, dat alleen lijkt op een livery. Waar die heen gaat, is B23 (voorstel: in de resource van het basisvoertuig).
+Mark vroeg (21 okt): "liveries horen bij 1 voertuig toch?" **Ja, voor soort 1, 2 en 3**: dat zijn uiterlijken van hetzelfde model, en ze gaan mee in de resource van dat voertuig. **Soort 4 niet**: dat is voor de game een apart voertuig met een eigen `modelName`, dat alleen lijkt op een livery. Die gaat ook in de resource van het basisvoertuig (B23, gekozen 21 okt).
 
 | Soort | Hoe | Voorbeeld | Bestanden | Hoort bij |
 |-------|-----|-----------|-----------|-----------|
 | 1. **Livery in de texture** | Livery-textures in de `.ytd` van het voertuig; aan/uit per slot in `carvariations.meta` `<liveries>`; namen via `liveryNames` in `carcols` | `strman/[Template]/strman_sign_1.dds` (een sjabloon voor zo'n livery). In de downloads gebruikt geen enkel voertuig `<liveries>` | `<model>.ytd` | hetzelfde model |
 | 2. **Livery als mod-onderdeel** | Elke livery is een eigen `.yft`, als `VMT_LIVERY_MOD` in een modkit in `carcols.meta` | `batic_livery1.yft` … `batic_livery18.yft`, `kriety2_liv1.yft`; in de downloads minstens 95 kits met `VMT_LIVERY_MOD`, tot 71 per kit | `<model>_livery<n>.yft` + kit in `carcols` | hetzelfde model |
 | 3. **Tweede livery-laag** | `livery2` / dak-livery | (niet in testdata; in de downloads alleen een lege `<livery2Names/>` in `carcols`) | nog uitzoeken (Q-M7) | hetzelfde model |
-| 4. **Apart model per uiterlijk** | Elke variant een eigen `modelName`, vaak dezelfde handling | `lsfd` … `lsfd5`, `halfback` + `halfback2` (USSS) | eigen `.yft`/`.ytd` en eigen entry in `vehicles.meta` | apart voertuig (B23) |
+| 4. **Apart model per uiterlijk** | Elke variant een eigen `modelName`, vaak dezelfde handling | `lsfd` … `lsfd5`, `halfback` + `halfback2` (USSS) | eigen `.yft`/`.ytd` en eigen entry in `vehicles.meta` | apart voertuig, maar in de resource van het basisvoertuig (B23) |
 
 Bronnen: GTAMods en Dawnstar (`community`, zie [sources.md](sources.md)), samengevat in [meta_files.md](meta_files.md).
 
@@ -58,7 +58,7 @@ In rapporten gebruikten we de notatie `livery_group = <modelName>`. Bronbestande
 
 ---
 
-## 3. Eén resource per voertuig: de indeling (advies, B24)
+## 3. Eén resource per voertuig: de indeling (B24)
 
 ### Wat B1 betekent
 
@@ -87,9 +87,9 @@ Forumgebruikers noemen het verschil klein; een officiële uitspraak van Cfx over
 
 Nog te meten op de dev-server: dezelfde voertuigen als één pack en als losse resources, met en zonder `cache/files/`. Meten: de tijd tussen `onResourceStarting` en `onResourceStart` op de server, haperingen in de console, de join-tijd in `CitizenFX.log` (met `developer 1` in F8), en `assetscount` in de client-console.
 
-### Advies: zo ziet een voertuig-resource eruit (B24)
+### Zo ziet een voertuig-resource eruit (B24, gekozen)
 
-Mark wil "de beste en meest overzichtelijke oplossing" (21 okt). Het advies volgt vijf regels:
+Mark wilde "de beste en meest overzichtelijke oplossing" en koos op 21 okt dit voorstel, met de `modelName` als naam van de resource (zonder `veh_` ervoor). De indeling volgt vijf regels:
 
 1. **Eén plek per soort bestand.** Meta's, game-bestanden, geluid en uitleg hebben elk een eigen map. Wie de resource opent, ziet meteen wat er is.
 2. **Vaste namen.** Elk voertuig gebruikt dezelfde bestandsnamen. De tool, de templates en jij weten altijd waar iets staat.
@@ -101,9 +101,9 @@ Mark wil "de beste en meest overzichtelijke oplossing" (21 okt). Het advies volg
 resources/
   [vehicles]/                          -- categorie; `ensure [vehicles]` start ook de submappen
     [shared]/                          -- wat meerdere voertuigen gebruiken
-      veh_shared_wheels_<naam>/        -- bijv. een wielen-pack
-      veh_shared_sounds_<naam>/        -- bijv. motorgeluiden die meerdere voertuigen delen
-    veh_kriegerty2/                    -- één voertuig
+      shared_wheels_<naam>/            -- bijv. een wielen-pack (voorstel)
+      shared_sounds_<naam>/            -- bijv. motorgeluiden die meerdere voertuigen delen (voorstel)
+    kriegerty2/                        -- één voertuig: de resource heet zoals het model
       fxmanifest.lua
       README.md                        -- herkomst, maker, licentie, versie, wat wij veranderden
       data/
@@ -126,17 +126,18 @@ resources/
 
 Bronbestanden (de originele download, livery-sjablonen, `.psd`'s) staan buiten `resources/`, bijvoorbeeld in `F:\fivem_dev\vehicle_sources\kriegerty2\`. Alles in `resources/` gaat mee naar een server, en een sjabloon van 200 MB hoort daar niet.
 
-| Keuze | Advies | Waarom | Hoe zeker |
+| Keuze | Gekozen | Waarom | Hoe zeker |
 |-------|--------|--------|-----------|
-| Naam van de resource | `veh_<modelName>`, kleine letters, zonder spaties | Ze staan bij elkaar in txAdmin en de console, en botsen nooit met een script. Eén naam voor resource, model en `.ytd`. Een spatie maakt de server tot `%20` | spatie: `tested` (serverlog 21 okt: `Lore%20Friendly%20Rim%20Packs`) |
+| Naam van de resource | de `modelName`, kleine letters, zonder spaties (Mark, 21 okt) | Eén naam voor resource, model en `.ytd`. Een spatie maakt de server tot `%20`. Let op: heten twee resources hetzelfde, dan neemt de server de eerste die hij vindt (§5). Een voertuig dat zo heet als een script (bijv. `ambulance`) gaat dus mis; de tool controleert dat | spatie: `tested` (serverlog 21 okt: `Lore%20Friendly%20Rim%20Packs`); in de game: `tested` (`vt_00`, 21 okt) |
 | Categorie | `[vehicles]`, met submappen naar keuze (`[emergency]`, `[shared]`) | Honderden resources blijven overzichtelijk; `ensure [vehicles]` start ook wat in de submappen staat | `official` (broncode) |
-| Meta's | map `data/`, vaste namen, één bestand per type | De downloads gebruiken allemaal `data/`. Voor FiveM maakt de mapnaam niet uit, dus kiezen we de gangbare | `official`; in-game nog bevestigen (Q-S1) |
-| Manifest | elke `data_file` met een vast pad, en `files { 'data/*.meta' }` | Je ziet precies wat er geladen wordt. Geen valkuilen van globs: een `*` in een mapnaam vindt niets, hoofdletters tellen, en "elke meta onder elk type" kan niet. De tool schrijft het manifest uit wat er echt staat | `official` (broncode) |
-| `stream/` | het voertuig zelf plat in `stream/`, onderdelen in `mods/`, liveries in `liveries/` | Je ziet meteen wat het voertuig is en wat erbij hoort, en liveries hebben een vaste plek | submappen: `tested` aan de serverkant (de server meldde bestanden uit submappen van drie packs, met alleen de bestandsnaam); in-game nog bevestigen (Q-S4) |
+| Meta's | map `data/`, vaste namen, één bestand per type | De downloads gebruiken allemaal `data/`. Voor FiveM maakt de mapnaam niet uit, dus kiezen we de gangbare | `official`; `data/` in de game `tested` (`vt_00`); andere mapnamen nog niet (Q-S1) |
+| Manifest | elke `data_file` met een vast pad, en `files { 'data/*.meta' }` | Je ziet precies wat er geladen wordt. Geen valkuilen van globs: een `*` in een mapnaam vindt niets, hoofdletters tellen, en "elke meta onder elk type" kan niet. De tool schrijft het manifest uit wat er echt staat | `official` (broncode); in de game `tested`: het werkt (`vt_00`), zonder `files {}` geen voertuig (`vt_73`), en de twee glob-valkuilen geven geen voertuig (`vt_74`, `vt_75`) |
+| `stream/` | het voertuig zelf plat in `stream/`, onderdelen in `mods/`, liveries in `liveries/` | Je ziet meteen wat het voertuig is en wat erbij hoort, en liveries hebben een vaste plek | `tested` (Q-S4): de server meldde bestanden uit submappen met alleen de bestandsnaam, en in de game werken liveries uit `liveries/` (`vt_13b`) en onderdelen uit `mods/` (`vt_11`) |
 | Livery soort 4 (B23) | in dezelfde resource: elk model naast het basismodel in `stream/`, een `Item` per model in dezelfde meta's | Ze delen meestal handling en textures; voor de speler is het één voertuig | voorstel |
 | Geluid | `audio/audioconfig/` en `audio/sfx/dlc_<naam>/` | Alles van geluid bij elkaar. `dlc_<naam>` is de naam van de geluidsbank en moet blijven | `community` (de Lore-pack doet het zo) |
 | Gedeelde wielen en geluiden | een eigen resource in `[vehicles]/[shared]/` | Niet dubbel per voertuig; één plek om bij te werken | voorstel |
-| Scripts | geen | Een resource zonder scripts kost tijdens het spelen niets (Q-S10). De naam van het voertuig: zie B26 | `official` (broncode) |
+| Scripts | geen | Een resource zonder scripts kost tijdens het spelen niets (Q-S10) | `official` (broncode) |
+| Naam in de game (B26) | `vehicle_label '<modelName>' '<naam>'` in het manifest; `dev_vehicletools` leest dat en zet de tekst met `AddTextEntry` | Geen script in de voertuig-resource nodig, en de naam aanpassen kan zonder de meta's te openen. Twee waarden, zodat ook een familie van modellen (soort 4) per model een naam heeft | `tested` (`vt_00`, 21 okt): `GetResourceMetadata` leest het op de client, ook zonder scripts in de resource |
 | `README.md` | klein, in de resource | Herkomst en licentie reizen mee met het voertuig | voorstel |
 
 Het manifest van zo'n resource (de tool maakt het):
@@ -157,7 +158,11 @@ data_file 'HANDLING_FILE'          'data/handling.meta'
 data_file 'VEHICLE_METADATA_FILE'  'data/vehicles.meta'
 data_file 'CARCOLS_FILE'           'data/carcols.meta'
 data_file 'VEHICLE_VARIATION_FILE' 'data/carvariations.meta'
+
+vehicle_label 'kriegerty2' 'Benefactor Krieger TY2'
 ```
+
+Een `vehiclelayouts.meta` krijgt de regel `data_file 'VEHICLE_LAYOUTS_FILE' 'data/vehiclelayouts.meta'`, als eerste. Eigen geluid krijgt `AUDIO_GAMEDATA`, `AUDIO_SOUNDDATA` en `AUDIO_WAVEPACK` met paden in `audio/`, en `files` krijgt de bestanden in `audio/` erbij.
 
 **Wat ik afraad, en waarom:**
 
@@ -167,7 +172,16 @@ data_file 'VEHICLE_VARIATION_FILE' 'data/carvariations.meta'
 - **`common/` in plaats van `data/`.** Werkt net zo goed; `data/` is gewoon gangbaarder.
 - **De voertuignaam vóór de meta-namen** (`kriegerty2_handling.meta`). Dubbel: de resource zegt het al.
 
-**Nog in-game te bevestigen** (zodra er een client is): dat een voertuig in deze indeling spawnt, dat de onderdelen uit `mods/` en de liveries uit `liveries/` in het mod-menu staan, dat geluid uit `audio/` werkt, en de keuze voor de naam (B26). Dat wordt het eerste geval van het testpakket (`vt_00_baseline`).
+**In de game (21 okt, testpakket, `tested`):**
+
+- `vt_00_baseline` (`tltypes` in deze indeling): start zonder melding, spawnt met textures, de handling is die uit `data/handling.meta`, de kit `948_tltypes_modkit` werkt, en de naam uit `vehicle_label` verschijnt.
+- Liveries uit `stream/liveries/` werken: `vt_13b` (atlas) heeft 16 liveries, en livery 5 is zichtbaar op de auto.
+- Onderdelen uit `stream/mods/` werken: `vt_11` (surano3) heeft alle 11 onderdelen in het mod-menu, en de nieuwe voorbumper is zichtbaar.
+- Een `stream/` die niet in de root staat, laadt niet: de meta's wel, het model nooit (`vt_76`).
+- Valkuil die niets met de indeling te maken heeft: het origineel `vt_13` heeft kit-id 620, en dat id heeft ook de vanilla-kit `620_gt750_modkit`. Dan krijgt het voertuig geen kit (M21).
+- Nog te doen: geluid uit `audio/` (iemand moet luisteren).
+
+Uitkomsten per geval: [test_pack.md](test_pack.md#uitkomsten).
 
 ### Wat we eerder overwogen
 

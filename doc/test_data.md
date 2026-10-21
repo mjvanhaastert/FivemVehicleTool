@@ -116,6 +116,7 @@ De ID's in de laatste kolom verwijzen naar [validation_rules.md](validation_rule
 | Zelfde `handlingName` of `modelName` twee keer in één pack | 4 + 2 | `180sx` 3× (PLOKS); `hachurac` (Lore) | X2, X3 |
 | **Botsingen** | | | |
 | Kit-id dubbel | minstens 44 id's, 29 tussen packs | `964`: `bmci` (PLOKS) en `callista` (Lore én lds); `926`: `q820` en `veneno` (beide PLOKS) | X4, B9, Q-S6 |
+| Kit-id dat vanilla ook gebruikt | 52 van de 296 kits (vanilla-lijst: DurtyFree-dump, 590 id's tussen 0 en 627) | 11 auto's in PLOKS op `135` (vanilla `135_prototipo_modkit`); `620_atlas_modkit` (lds, vanilla `620_gt750_modkit`); `268_hermes_modkit` en `269_revolter_modkit` (PLOKS, gelijk aan vanilla). In de game krijgt zo'n voertuig geen kit (`vt_13`, 21 okt) | M21, X4 |
 | Add-on definieert kits met een vanilla-naam | 2 kits + 5× `0_default_modkit` | `PLOKS_CARS/[FORD]/wildtrak/carcols.meta`: `268_hermes_modkit`, `269_revolter_modkit` | M21, Q-M19 |
 | Licht-id of sirene-id dubbel | 29 + 2 | licht `998` 13× in PLOKS | X4 |
 | Zelfde stream-naam in één pack, andere inhoud | 7 (PLOKS), 5 (Lore) | `spoiler_2.yft` van `bmci`, `f430s` en `gs350` | X7, Q-S6 |
