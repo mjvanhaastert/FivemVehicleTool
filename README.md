@@ -1,6 +1,6 @@
 # FivemVehicleTool
 
-> Werknaam. Mark kiest een nieuwe naam (lijst in [doc/decisions.md](doc/decisions.md), B17). Het in-game deel gaat `dev_<naam>` heten.
+> Naam, voorlopig: **vehicletools**. Het in-game deel heet `dev_vehicletools` (B17 in [doc/decisions.md](doc/decisions.md)).
 
 Een all-in-one voertuigtool voor FiveM:
 
@@ -9,7 +9,7 @@ Een all-in-one voertuigtool voor FiveM:
 - controle van meta-bestanden op de regels en de naamgeving, met templates zodat waarden altijd op dezelfde manier staan en ontbrekende waarden uit een template komen;
 - een vaste mapstructuur voor voertuig-resources, ook met meerdere liveries.
 
-**Fase: onderzoek.** Er wordt nog niets gebouwd.
+**Fase: onderzoek.** De tool zelf wordt nog niet gebouwd. Op de dev-server staat een testpakket waarmee we de vragen in de game beantwoorden ([doc/test_pack.md](doc/test_pack.md)).
 
 ## Wat staat waar
 
@@ -25,10 +25,13 @@ Een all-in-one voertuigtool voor FiveM:
 - Packs splitsen naar losse resources (B2)
 - Eén tool als het kan, anders twee (B3)
 - Volgorde: structuur en templates → manifest → textures → handling-editor (B12)
+- Een voertuig-resource heet zoals het model, met `data/`, `stream/` (met `mods/` en `liveries/`) en `audio/`, en een vast manifest (B24); livery soort 4 in dezelfde resource (B23)
+- De naam in de game staat in het manifest: `vehicle_label '<modelName>' '<naam>'` (B26)
+- Een eigen testpakket, ook met expres gemaakte fouten (B25)
 - Alles wat in FiveM draait volgt Marks standaard: `dev_<naam>`, geen dependencies behalve oxmysql, framework-koppeling via bridge-haken, NUI in React + Vite (V1–V8)
 
 Meer in [doc/decisions.md](doc/decisions.md).
 
 ## Voertuigbestanden
 
-Voertuigen van anderen komen niet in deze repo: ze zijn niet van ons en te groot. `.gitignore` houdt `.yft`, `.ytd`, `.rpf` en dergelijke buiten git. Een testpakket staat alleen beschreven ([doc/test_pack.md](doc/test_pack.md)).
+Voertuigen van anderen komen niet in deze repo: ze zijn niet van ons en te groot. `.gitignore` houdt `.yft`, `.ytd`, `.rpf` en dergelijke buiten git. Het testpakket staat alleen op de dev-server; in de repo staan de beschrijving ([doc/test_pack.md](doc/test_pack.md)) en het script dat het maakt ([research/scripts/](research/scripts/README.md)).

@@ -51,7 +51,8 @@ Gelezen op 21 okt 2026 (zelfde commit), voor de structuur, het manifest en de te
 | [Dawnstar: carvariations](https://docs.dwnstr.com/data-files/carvariations) | siren- en light-id's |
 | [Vanilla kitName-lijst (Mentozz, 2021)](https://forum-cfx-re.akamaized.net/original/4X/6/9/9/6990851be012e0b402f55585c38322eb4b676a35.txt) | bezette kit-id's in vanilla |
 | [GTA V-kleurentabel](https://gtaforums.com/topic/836998-list-of-gta-5-vehicle-colors/) | kleur-indices in `carvariations` |
-| [DurtyFree: gta-v-data-dumps](https://github.com/DurtyFree/gta-v-data-dumps) | lijsten (audio-namen, modellen); onze kennisbasis gebruikt hem al voor peds en wapens |
+| [DurtyFree: gta-v-data-dumps](https://github.com/DurtyFree/gta-v-data-dumps) | lijsten (audio-namen, modellen); onze kennisbasis gebruikt hem al voor peds en wapens. `vehicles.json` heeft per voertuig `ModKits` (bijv. `620_gt750_modkit`): daaruit de vanilla-kit-id's (601 kits, 590 id's, 0–627; opgehaald 21 okt 2026, 921 voertuigen, dus ouder dan build 3889) |
+| [Cfx-forum: Vehicle ModKits not working](https://forum.cfx.re/t/vehicle-modkits-not-working/19392) | `community` (2017): een kit-id dat een DLC-auto al heeft, werkt niet; ons testpakket bevestigt dat (M21) |
 
 ## Handling: editors en rekenhulpen (community)
 
