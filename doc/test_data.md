@@ -12,7 +12,7 @@ Alle vier staan sinds 20 okt ook in `[Vehicles]` van de dev-server.
 
 | Map | Type | Vorm | Wat het laat zien |
 |-----|------|------|-------------------|
-| `cle53amg/` | auto, **nog niet omgezet** | alleen `dlc.rpf` (293 MB, RPF7, niet versleuteld) | Intake vanaf een GTA-mod: uitpakken en omzetten (zie [tool_functions.md](tool_functions.md), functie F-E1) |
+| `cle53amg/` | auto, **nog niet omgezet** | alleen `dlc.rpf` (307 MB = 293 MiB, RPF7, niet versleuteld) | Intake vanaf een GTA-mod: uitpakken en omzetten (zie [tool_functions.md](tool_functions.md), functie F-E1) |
 | `kriegerty2/` | auto (`VC_SUPER`) | uitvoer van convert.cfx.rs: `common/` + `stream/`, 7 meta's | **Referentie "goed"** qua vorm. Kit `64378_kriegerty2_modkit`; `txdRelationships` naar vanilla `vehicles_fmj_interior`; een livery-onderdeel met een andere naam (`kriety2_liv1.yft`). Grootste bestand 4,4 MiB virt. Let op: `carcols` heeft een eigen licht-id 941, maar `carvariations` verwijst naar `lightSettings` 140 (testgeval voor M10) |
 | `strman/` | auto (`VC_SPORT`), **escrow** | `data/` + `stream/`, `.fxap`, `dependency '/assetpacks'`, map `[Template]` met een livery-sjabloon | **Bekend probleemgeval "oversized".** `strman.ytd` is 1,9 MB op schijf maar **76 MiB phys**. `strman.yft` en `strman_hi.yft` zijn versleuteld (header `FXAP`); de `.ytd` niet. Ook een animatie (`va_str.ycd`). Het manifest noemt `data/carcols.meta`, maar **dat bestand ontbreekt** (testgeval voor R3/R4) |
 | `zaccflatlit/` | trailer (`VC_UTILITY`) | `__resource.lua`, meta's in de root | Oud manifest, geen `common/`. `zaccflatlit.ytd` 32 MiB phys, `.yft` 14,2 MiB virt. Het manifest noemt `carcols.meta` en `vehiclelayouts.meta`, maar **die ontbreken** (testgeval voor R3/R4) |
@@ -73,13 +73,13 @@ Mark zette op 20 okt downloads in `resources/[Vehicles]` van de dev-server. Gesc
 
 | Map | Wat | Voertuigen | Grootte | Laadt FiveM het? |
 |-----|-----|-----------:|--------:|------------------|
-| `FiveM-Civ-Car-Pack/` | Pack van PLOKMJNB (GitHub): `PLOKS_CARS`, één resource met echte merken, plus `VehicleSpawner` (C#-menu met drie `.dll`'s) en voorbeeldbestanden voor vMenu en een framework | 189 | 5,3 GB | **nee** |
+| `FiveM-Civ-Car-Pack/` | Pack van PLOKMJNB (GitHub): `PLOKS_CARS`, één resource met echte merken, plus `VehicleSpawner` (C#-menu met drie `.dll`'s) en voorbeeldbestanden voor vMenu en een framework | 191 | 5,3 GB | **nee** |
 | `FiveM-Lore-Friendly-Pack/` | Pack van SpiritsCreations (GitHub): `Lore_Friendly_Car_Pack` v1.2 met 41 motorgeluiden, en zes wielen-packs | 72 | 2,9 GB | **nee** |
 | `lds-lorevehicles/` | Lore-friendly pack: één resource, met 29 geluids-resources in `[lorevehicles-sounds]/` | 98 | 1,7 GB | ja, maar de 29 geluids-resources niet |
-| `kriegerty2/`, `strman/`, `zaccflatlit/` | kopieën uit `TestVehicleFolder` | 3 | 77 MB | ja |
+| `kriegerty2/`, `strman/`, `zaccflatlit/` | kopieën uit `TestVehicleFolder` | 3 | 73 MB | ja |
 | `cle53amg/` | kopie uit `TestVehicleFolder`: alleen `dlc.rpf` | – | 307 MB | nee |
 
-Samen: 362 voertuigen (356 auto's, 4 motoren, 1 amfibie-auto, 1 trailer), 16.431 bestanden, ruim 10 GB, 13.856 bestanden met een RSC7-header.
+Samen: 364 voertuigen, 16.431 bestanden, ruim 10 GB, 13.856 bestanden met een RSC7-header. Van twee voertuigen (`bolide` en `2020ss` in `PLOKS_CARS`) is de `vehicles.meta` kapot; de andere 362 konden we lezen: 356 auto's, 4 motoren, 1 amfibie-auto en 1 trailer. Ook acht `carcols.meta` waren niet te lezen, dus de aantallen voor voertuigen en kits hieronder zijn minimums.
 
 **Waarom twee packs en `cle53amg` niet laden:** FiveM kijkt alleen in mappen met haken. `FiveM-Civ-Car-Pack` heeft geen haken en geen manifest, dus de server ziet hem als één resource zonder manifest en kijkt er niet in. Hetzelfde geldt voor de geluids-resources in `lds-lorevehicles`: een resource in een resource laadt nooit (`official`, broncode; zie [folder_structure.md](folder_structure.md) §5). `ensure [Vehicles]` start dus alleen `kriegerty2`, `lds-lorevehicles`, `strman` en `zaccflatlit`.
 
@@ -97,30 +97,30 @@ De ID's in de laatste kolom verwijzen naar [validation_rules.md](validation_rule
 | `.rpf` | 2 | `cle53amg/dlc.rpf`; `PLOKS_CARS/stream/[ROLLSROYCE]/rculi/rculi_mods.rpf` (in `stream/`) | F9, Q-S14 |
 | **Manifest** | | | |
 | `data_file`-type niet in de officiële lijst | 5 types | `DLCTEXT_FILE`, `VEHICLE_SHOP_FILE` (`kriegerty2`), `CARCONTENTUNLOCKS_FILE` (lds), `VEHICLE_SETTINGS_FILE`, `CAR_ADDON_CONTENT_UNLOCKS` (Lore) | R14, Q-M15 |
-| Elke meta onder elk type (`data_file 'HANDLING_FILE' 'data/**/*.meta'` enz.) | Lore-pack: 319 bestanden × 10 types; ook de zes wielen-packs | `Lore_Friendly_Car_Pack` | R6, Q-S13 |
+| Elke meta onder negen types (`data_file 'HANDLING_FILE' 'data/**/*.meta'` enz.) | Lore-pack: 319 bestanden × 9 types; ook de zes wielen-packs | `Lore_Friendly_Car_Pack` | R6, Q-S13 |
 | Bestand of script uit het manifest ontbreekt | 3 meta's, 1 script, 1 geluidsmap | `strman`, `zaccflatlit`; `versioncheck.lua` en `audio/sfx/dlc_bati901` (Lore) | R3, R4, A2 |
 | Scripts met HTTP-versiecheck en `SetConvarServerInfo('tags', …)` | 2 | `server.lua` van `PLOKS_CARS` en `Lore_Friendly_Car_Pack` | R8, B6 |
 | Mapnamen met spaties en `'` | 128 mappen | `data/[6STR]/6STR Benefactor Schwartzer 'Aggressor' Custom` | info: globs werken, losse paden in een Lua-string breken |
 | **Meta-inhoud** | | | |
-| XML die een strikte parser weigert | 13 bestanden | `--` in commentaar (`[BUGATTI]/bolide/vehicles.meta`); `<visibleMods>` dicht met `</linkMods>` (`[PORSCHE]/taycan/carcols.meta`); NUL-bytes aan het eind (lds `imperial/carvariations.meta`); twee spaties vóór `<?xml` (lds `gstghell1/carcols.meta`) | M1, Q-M16 |
+| XML die een strikte parser weigert | 13 bestanden | `--` in commentaar (`[BUGATTI]/bolide/vehicles.meta`); `<visibleMods>` dicht met `</linkMods>` (`[PORSCHE]/taycan/carcols.meta`); NUL-bytes aan het eind (lds `imperial/carvariations.meta`); drie spaties vóór `<?xml` (lds `gstghell1/carcols.meta`) | M1, Q-M16 |
 | Voertuig in `vehicles.meta` zonder `.yft` | 11 | `aventador` in `[FORD]/raptor2017/vehicles.meta` | M4 |
 | `handlingId` die nergens staat | 3 | `dodgesrt2`, `tofu` (PLOKS), `sultanrsv82` (Lore) | M6 |
 | `handlingId` van een vanilla-voertuig | 14 | lds `surano3` (`SURANO`), PLOKS `sandero` (`BALLER`) | M28 (geen fout) |
 | Voertuig zonder `carvariations` | 13 | PLOKS `sandero`; lds `imperial` (door de NUL-bytes) | Q-M9 |
 | `vehicleClass` die niet bestaat | 4 | `VC_SPORTS` (PLOKS `stingray`), `VC_COMPACTS` (lds `castella`, `weevilup`) | M27, Q-M17 |
-| Geen tekst voor `gameName` | 152 van 362 | lds: 85 van 98; PLOKS `bmci` (`gameName` `m5`, tekst staat onder `bmci`) | M16, Q-M18 |
-| `audioNameHash` die nergens bestaat | 4 | lds `hellenstorm`, `zodiacr` | M12, Q-M13 |
+| Geen tekst voor `gameName` | 152 van de 362 gelezen | lds: 85 van 98; PLOKS `bmci` (`gameName` `m5`, en geen tekst voor `m5`) | M16, Q-M18 |
+| `audioNameHash` die niet in de downloads staat en geen vanilla-voertuignaam is | 4 | lds `hellenstorm`, `zodiacr` | M12, Q-M13 |
 | Kit-naam niet in de eigen `carcols` | 12 | `0_suv_modkit` (lds `yosemiteswb`), `0_default_no_lower` (Lore) | M8 |
 | Zelfde `handlingName` of `modelName` twee keer in één pack | 4 + 2 | `180sx` 3× (PLOKS); `hachurac` (Lore) | X2, X3 |
 | **Botsingen** | | | |
-| Kit-id dubbel | 44 id's, 29 tussen packs | `964`: `bmci` (PLOKS) en `callista` (Lore én lds); `926`: `q820` en `veneno` (beide PLOKS) | X4, B9, Q-S6 |
-| Add-on definieert een vanilla-kit opnieuw | 2 kits + 5× `0_default_modkit` | `PLOKS_CARS/[FORD]/wildtrak/carcols.meta`: `268_hermes_modkit`, `269_revolter_modkit` | M21, Q-M19 |
+| Kit-id dubbel | minstens 44 id's, 29 tussen packs | `964`: `bmci` (PLOKS) en `callista` (Lore én lds); `926`: `q820` en `veneno` (beide PLOKS) | X4, B9, Q-S6 |
+| Add-on definieert kits met een vanilla-naam | 2 kits + 5× `0_default_modkit` | `PLOKS_CARS/[FORD]/wildtrak/carcols.meta`: `268_hermes_modkit`, `269_revolter_modkit` | M21, Q-M19 |
 | Licht-id of sirene-id dubbel | 29 + 2 | licht `998` 13× in PLOKS | X4 |
 | Zelfde stream-naam in één pack, andere inhoud | 7 (PLOKS), 5 (Lore) | `spoiler_2.yft` van `bmci`, `f430s` en `gs350` | X7, Q-S6 |
 | Zelfde stream-naam tussen packs | 1.474 (1.395 met dezelfde grootte) | bijna alles tussen Lore en lds | X1 |
 | Zelfde voertuig in twee packs | 20 modellen | `ariant`, `zr250`, `mf1` (Lore én lds) | X2 |
 | Vervangt een vanilla-voertuig | 2 | lds `euros`, Lore `futo2` | X5, Q-T6 |
-| Meerdere `_manifest.ymf` in één resource | 7 (Lore), 1 (PLOKS) | | X7, Q-S11 |
+| Meerdere `_manifest.ymf` in één resource | 6 (Lore) | | X7, Q-S11 |
 | **Grootte** (per bestand, de grenzen van FiveM) | | | |
 | Boven 16 MiB | 1.352 van 13.856 | 1.197 `.yft` (textures in het model), 151 `.ytd`, 4 `.ydr`; 1.184 door phys, 168 door virt | T1 |
 | Boven 32 MiB | 97 | | T1 |
@@ -129,7 +129,7 @@ De ID's in de laatste kolom verwijzen naar [validation_rules.md](validation_rule
 
 Per pack boven 16 MiB: `PLOKS_CARS` 481 (24 boven 64 MiB), `lds-lorevehicles` 469 (1 boven 64), `Lore_Friendly_Car_Pack` 400 (geen boven 64), `strman` 1 (76 MiB), `zaccflatlit` 1.
 
-**Liveries:** 95 kits met `VMT_LIVERY_MOD` (soort 2), tot 31 per kit. Geen enkel voertuig gebruikt `<liveries>` in `carvariations` (soort 1).
+**Liveries:** minstens 95 kits met `VMT_LIVERY_MOD` (soort 2), tot 71 per kit (`rh4_modkit` in de Lore-pack). Geen enkel voertuig gebruikt `<liveries>` in `carvariations` (soort 1).
 
 **Handling** (356 handlings, voor Q-H4): `fMass` 230–4.750 (90% tussen 900 en 2.700), `fInitialDriveForce` 0–4,79 (90% tussen 0,20 en 0,525), `fInitialDriveMaxFlatVel` 98–380 (130–257), `nInitialDriveGears` 1–10 (4–7), `fBrakeForce` 0,2–14,7 (0,315–1,5), `fTractionCurveMax` 0,8–7,65 (1,7–2,88). De uitschieters zijn goede testgevallen voor de grenzen in de editor ([handling.md](handling.md)).
 
@@ -153,7 +153,7 @@ Per pack boven 16 MiB: `PLOKS_CARS` 481 (24 boven 64 MiB), `lds-lorevehicles` 46
 | Vanilla-namen in `stream/` (Q-T6) | `11john11_sapo_pack`; lds `euros`, Lore `futo2` (hele voertuigen) |
 | Resource die FiveM niet vindt (R13) | `FiveM-Civ-Car-Pack` zoals gedownload; de geluids-resources in `lds-lorevehicles` |
 | XML die een strikte parser weigert (Q-M16) | `[BUGATTI]/bolide`, `[PORSCHE]/taycan` (PLOKS); `imperial`, `gstghell1` (lds) |
-| Kit-id-botsingen en vanilla-kits (Q-S6, Q-M19) | `bmci` + `callista`; `wildtrak` (PLOKS) |
+| Kit-id-botsingen en kits met een vanilla-naam (Q-S6, Q-M19) | `bmci` + `callista`; `wildtrak` (PLOKS) |
 | Alle grenzen van de oversized-melding (Q-T1) | `cutlass` (26 MiB), `rhinetaxi` (40), `nissantitan17` (52), `i8` (128) |
 
 ## Checklist in-game (uit `PACK_VALIDATION.md` en `TEST_PLAN.md`)

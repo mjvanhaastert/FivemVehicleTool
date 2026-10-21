@@ -190,37 +190,100 @@ def parse_manifest(path):
     return info
 
 
-def glob_to_regex(pattern):
-    """FiveM-glob (ResourceMetaDataComponent::MatchFiles): '*' en '?' binnen een naam,
-    '**' (na '/' of aan het begin) = nul of meer mappen. Hoofdlettergevoelig."""
-    pattern = pattern.replace('\\', '/')
-    while pattern.startswith('./'):
-        pattern = pattern[2:]
-    parts = pattern.split('/')
-    rx = ''
-    for i, part in enumerate(parts):
-        last = i == len(parts) - 1
-        if part == '**':
-            rx += '(?:[^/]+/)*' if not last else '.*'
+def _fivem_name_regex(part, ignore_case):
+    # Zelfde omzetting als de Match-struct in ResourceMetaDataComponent.cpp:
+    # alles escapen, dan '?' -> '.' en '*' -> '.*'
+    rx = ''.join('.*' if ch == '*' else '.' if ch == '?' else re.escape(ch) for ch in part)
+    return re.compile('^' + rx + '$', re.I if ignore_case else 0)
+
+
+def _norm(path):
+    path = path.replace('\\', '/')
+    out = []
+    for seg in path.split('/'):
+        if seg in ('', '.'):
             continue
-        seg = ''
-        for ch in part:
-            if ch == '*':
-                seg += '[^/]*'
-            elif ch == '?':
-                seg += '[^/]'
-            else:
-                seg += re.escape(ch)
-        rx += seg + ('' if last else '/')
-    return '^' + rx + '$'
+        out.append(seg)
+    return '/'.join(out)
 
 
-def glob_match(pattern, rel_files, ignore_case=False):
-    try:
-        rx = re.compile(glob_to_regex(pattern), re.I if ignore_case else 0)
-    except re.error:
-        return []
-    return [f for f in rel_files if rx.match(f)]
+class _Tree:
+    """Mappenboom van een resource, opgebouwd uit de lijst met relatieve bestandspaden."""
+
+    def __init__(self, rel_files):
+        self.entries = {'': {}}
+        for f in rel_files:
+            parts = f.split('/')
+            for i in range(len(parts)):
+                parent = '/'.join(parts[:i])
+                name = parts[i]
+                is_dir = i < len(parts) - 1
+                self.entries.setdefault(parent, {})
+                if name not in self.entries[parent] or is_dir:
+                    self.entries[parent][name] = is_dir
+                if is_dir:
+                    self.entries.setdefault('/'.join(parts[:i + 1]), {})
+
+    def match(self, pattern, ignore_case):
+        # Match(device, pattern): map = alles tot de laatste '/', naam = de rest
+        slash = pattern.rfind('/')
+        root = pattern[:slash] if slash != -1 else ''
+        after = pattern[slash + 1:] if slash != -1 else pattern
+        rx = _fivem_name_regex(after, ignore_case)
+        for name, is_dir in sorted(self.entries.get(_norm(root), {}).items(), key=lambda kv: kv[0].lower()):
+            if rx.match(name):
+                yield name, is_dir
+
+
+def _get_directory(path):
+    i = path.rfind('/')
+    return path[:i] if i != -1 else '.'
+
+
+def _match_files(tree, pattern, out, ignore_case, depth=0):
+    """Port van MatchFiles (ResourceMetaDataComponent.cpp, master 20 okt 2026), inclusief
+    het afwijkende gedrag: een enkele '*' in een mapnaam vindt niets, omdat de code het
+    teken vóór de '/' weglaat; '?' werkt alleen in de bestandsnaam; '**' werkt."""
+    if depth > 64:
+        return
+    pn = pattern
+    star = pn.find('*')
+    before = _get_directory(pn[:star] if star != -1 else pn)
+    slash = pn.find('/', star) if star != -1 else -1
+    after = pn[slash + 1:] if slash != -1 else ''
+    recurse = star != -1 and pn[star + 1:star + 2] == '*' and (star == 0 or pn[star - 1] == '/')
+    if recurse:
+        for off in (1, 2):
+            sub = pn[:star] + pn[star + off:]
+            _match_files(tree, sub.replace('//', '/'), out, ignore_case, depth + 1)
+        for name, is_dir in tree.match(pn[:star + 1], ignore_case):
+            if is_dir:
+                _match_files(tree, before + '/' + name + '/' + pn[star:], out, ignore_case, depth + 1)
+    else:
+        find_pattern = pn[:slash - 1] if slash != -1 else pn
+        for name, is_dir in tree.match(find_pattern, ignore_case):
+            if not (slash != -1 and not is_dir):
+                match_path = (before + '/' + name) if before not in ('.', '') else name
+                if after:
+                    _match_files(tree, match_path + '/' + after, out, ignore_case, depth + 1)
+                elif not is_dir:
+                    out.add(match_path)
+
+
+def glob_match(pattern, rel_files, ignore_case=False, _cache={}):
+    """Welke bestanden FiveM bij dit patroon vindt (paden relatief aan de resource)."""
+    key = id(rel_files)
+    tree = _cache.get(key)
+    if tree is None or tree[0] is not rel_files:
+        tree = (rel_files, _Tree(rel_files))
+        _cache.clear()
+        _cache[key] = tree
+    pat = pattern.replace('\\', '/')
+    while pat.startswith('./'):
+        pat = pat[2:]
+    out = set()
+    _match_files(tree[1], pat, out, ignore_case)
+    return sorted(out)
 
 
 # ---------------------------------------------------------------- meta (XML)

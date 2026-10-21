@@ -35,6 +35,7 @@ Gelezen op 21 okt 2026 (zelfde commit), voor de structuur, het manifest en de te
 | `code/components/citizen-server-impl/src/ResourceFilesComponent.cpp` | `.y*`-bestanden uit `stream/` gaan niet mee in `files` (behalve `.ytyp`) |
 | `code/components/citizen-resources-core/src/ResourceMetaDataComponent.cpp` | hoe globs werken (`*`, `?`, `**`, hoofdlettergevoelig) |
 | `code/components/citizen-resources-gta/src/ResourcesTest.cpp` | wat de client met `data_file` doet ([meta_files.md](meta_files.md) §10) |
+| `code/components/citizen-server-impl/src/ServerResources.cpp` | wat de server bij het starten van een resource meldt: ontbrekende `files` en scripts, oversized-bestanden, "Started resource x (n warnings)" |
 
 ## Meta-bestanden (community)
 
@@ -90,6 +91,17 @@ Gelezen op 21 okt 2026 (zelfde commit), voor de structuur, het manifest en de te
 | [QuantumMalice/vehiclehandler](https://github.com/QuantumMalice/vehiclehandler) | map `vehiclehandler/` (versie 1.4.3; GPL-3.0; vereist ox_lib); zie [inventory.md](inventory.md) |
 
 ---
+
+## Eén pack of veel resources (Q-S10, gelezen op 21 okt 2026)
+
+| Bron | Label | Wat |
+|------|-------|-----|
+| FiveM-broncode: `ResourceScriptingComponent.cpp`, `ResourceEventComponent.cpp`, `LuaMetaDataLoader.cpp`, `ResourceFilesComponent.cpp`, `ResourceFileDatabase.cpp`, `GameServer.cpp` (server); `ResourceNetBindings.cpp`, `CachedResourceMounter.cpp`, `ResourceCacheDeviceV2.cpp`, `ResourceCache.cpp`, `gta-streaming-five/src/Streaming.cpp`, `LoadStreamingFile.cpp` (client) | `official` | kosten per resource, de grens van 65.535 bestanden, laden bij het joinen, herstarten |
+| [Condensing resources into a pack: does it really make a difference?](https://forum.cfx.re/t/condensing-resources-into-a-pack-does-it-really-make-a-difference/4884742), [Better to bundle cars in packs or separate resources?](https://forum.cfx.re/t/optimization-better-to-bundle-cars-in-packs-or-separate-resources/2065086) | `community` | gebruikers: het verschil is klein |
+| [EUP stream blocking server startup](https://forum.cfx.re/t/eup-stream-blocking-server-startup/5214257) | `community` | grote packs en de start-limiet van txAdmin |
+| [What is the resource limit?](https://forum.cfx.re/t/what-is-the-resource-limit/52006), [Possible limit addon car for server](https://forum.cfx.re/t/possible-limit-addon-car-for-server/732911), [How many resources is too many?](https://forum.cfx.re/t/how-many-resources-is-too-many-will-combining-cars-help/1502845) | `community` | oude claims over een maximum aantal resources |
+| [Update stream folder at runtime](https://forum.cfx.re/t/update-stream-folder-at-runtime/4781347), [Download before game instead of in-game](https://forum.cfx.re/t/download-before-game-instead-of-in-game/1971666) | `official` (antwoorden van de oprichter van Cfx op het forum) | `str_requestFlush` na het bijwerken van assets; stream-bestanden in `files {}` worden niet gebruikt |
+| GitHub-issues [#2984](https://github.com/citizenfx/fivem/issues/2984), [#2969](https://github.com/citizenfx/fivem/issues/2969), PR [#4072](https://github.com/citizenfx/fivem/pull/4072) | `community` / `official` | de aparte lijst voor `.ytd`'s; crash na het herstarten van een voertuig-pack; een (niet samengevoegde) PR die de lijsten verder splitst |
 
 ## Nog te bekijken voor het onderzoek
 

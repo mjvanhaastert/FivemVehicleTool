@@ -17,10 +17,10 @@ Volgorde (eerdere keuze B5): R → F → M → X → A → T. Alleen-lezen contr
 |----|----------|-------|-----|------|------------------------|
 | R1 | `fxmanifest.lua` aanwezig | FAIL | auto: maken uit template | plan §7 stap 1 | `FXMANIFEST_MISSING` |
 | R2 | `__resource.lua` in plaats van `fxmanifest.lua` | WARN (FAIL in het plan) | auto: omzetten (Q-S9) | plan §7 | `LEGACY_RESOURCE_MANIFEST` |
-| R3 | Elk bestand in `files {}` bestaat | WARN | auto: regel weg | plan §7 | nee |
-| R4 | Elk pad in `data_file` bestaat | WARN | auto: regel weg | plan §7 | alleen voor audio (`AUDIO_CONFIG_MISSING`, `AUDIO_WAVEPACK_*`) |
+| R3 | Elk bestand in `files {}` bestaat. De server meldt dit zelf bij het starten ("could not find file …"), ook voor `client_script`, `server_script` en `shared_script`, maar niet altijd: een glob in een bestaande map die niets vindt (`data/*.meta`), meldt hij niet | WARN | auto: regel weg | plan §7; `official`, broncode (`ServerResources.cpp`) | nee |
+| R4 | Elk pad in `data_file` bestaat. Hier meldt de server **niets**: hij controleert `data_file` niet, en de client geeft een ontbrekend pad zonder `*` gewoon door aan de game ([meta_files.md](meta_files.md) §10) | WARN | auto: regel weg | plan §7; `official`, broncode | alleen voor audio (`AUDIO_CONFIG_MISSING`, `AUDIO_WAVEPACK_*`) |
 | R5 | Een meta staat in de resource maar niet in het manifest | WARN | auto: toevoegen | plan §7 | via R7 |
-| R6 | `data_file`-type past bij het bestand (op root-element, niet op bestandsnaam). Ook: één bestand onder meerdere types (de Lore-pack laadt elke meta onder tien types, met `data_file 'HANDLING_FILE' 'data/**/*.meta'` enz.) | WARN | auto: corrigeren | plan §7; root-element: nieuw; meerdere types: downloads 21 okt (Q-S13) | nee |
+| R6 | `data_file`-type past bij het bestand (op root-element, niet op bestandsnaam). Ook: één bestand onder meerdere types (de Lore-pack laadt elke meta onder negen types, met `data_file 'HANDLING_FILE' 'data/**/*.meta'` enz.) | WARN | auto: corrigeren | plan §7; root-element: nieuw; meerdere types: downloads 21 okt (Q-S13) | nee |
 | R7 | Bestand in de resource dat het manifest nergens noemt (`UNDECLARED_FILE_IN_RESOURCE`). **Uitzondering: alles in `stream/`** (FiveM streamt dat vanzelf) | WARN | nee | intake §3, meta_ref §11 | `UNDECLARED_FILE_IN_RESOURCE`, **zonder** de uitzondering: 164 vals alarmen in de laatste runs |
 | R8 | `.lua`-bestanden in een voertuig-resource, behalve de manifests. Extra melden: netwerkverkeer (`PerformHttpRequest`) en server-instellingen (`SetConvarServerInfo`), zoals de versiechecks in twee packs uit de downloads; en `.dll`'s | SECURITY | nee, nooit verwijderen (B6) | plan §7; downloads 21 okt | `LUA_FILE_FOUND` (telt ten onrechte ook `__resource.lua`) |
 | R9 | Escrow: `.fxap` of `dependency '/assetpacks'` | INFO | nee: resource alleen lezen | nieuw (zie [textures.md](textures.md)) | nee |
@@ -47,7 +47,7 @@ B1 is gekozen (één resource per voertuig); de indeling binnen de resource is n
 | F7 | Meerdere voertuigen in één `vehicles.meta` (`PACK_MODE`) | INFO | voorstel: splitsen | meta_ref §4.3, §7 | `check_resource_meta.py` (alleen onder `data/`), `split_multi_vehicle.py` |
 | F8 | Map-bestanden in een voertuig-resource (`.ymap`, `.ytyp`, gebouw-`.ydr`) | WARN | nee | nieuw (`11john11_sapo_pack`) | nee |
 | F9 | `.rpf` in de resource: moet eerst omgezet. Ook in `stream/` (gezien: `PLOKS_CARS/stream/[ROLLSROYCE]/rculi/rculi_mods.rpf`, Q-S14) | FAIL | voorstel: intake | canvas; downloads 21 okt | nee |
-| F10 | `stream/` staat direct in de root van de resource. Een `stream/` dieper in de resource (zoals `Vehicles/<categorie>/stream/` in de oude repo) wordt niet gestreamd | FAIL | voorstel: verplaatsen | `official`, broncode (`ResourceStreamComponent.cpp`: alleen `<resource>/stream/`) | nee |
+| F10 | `stream/` staat direct in de root van de resource. Een `stream/` dieper in de resource (zoals `Vehicles/<categorie>/stream/` in de oude repo) wordt niet automatisch gestreamd (alleen een script kan met `REGISTER_RESOURCE_ASSET` nog een los bestand aanmelden) | FAIL | voorstel: verplaatsen | `official`, broncode (`ResourceStreamComponent.cpp`: alleen `<resource>/stream/`) | nee |
 
 ## M. Meta-inhoud en koppelingen
 
@@ -68,7 +68,7 @@ B1 is gekozen (één resource per voertuig); de indeling binnen de resource is n
 | M13 | `txdRelationships`: parent bestaat; relaties met een vreemde `child` melden | WARN | nee | nieuw (`strman`) | nee |
 | M14 | Twee identieke `carcols.meta` (zelfde SHA256) | WARN | voorstel: één gedeelde | META_SPLIT_POLICY | `check_resource_meta.py` |
 | M15 | Meerdere modellen in één `carvariations.meta`, meerdere handlings in één `handling.meta` | INFO | voorstel: splitsen | META_SPLIT_POLICY | `check_resource_meta.py` |
-| M16 | Waar de naam vandaan komt: `AddTextEntry` in een `.lua` (ook `AddTextEntryByHash` met de hash van `gameName`), of nergens (`TEXT_SOURCE`). In de downloads heeft 152 van de 362 voertuigen geen tekst (Q-M18) | WARN als nergens | nee | meta_ref §5; downloads 21 okt | nee |
+| M16 | Waar de naam vandaan komt: `AddTextEntry` in een `.lua` (ook `AddTextEntryByHash` met de hash van `gameName`), of nergens (`TEXT_SOURCE`). In de downloads heeft 152 van de 362 voertuigen die we konden lezen geen tekst (Q-M18) | WARN als nergens | nee | meta_ref §5; downloads 21 okt | nee |
 | M17 | Type en klasse passen bij elkaar | WARN | voorstel | VT, meta_ref §8 | `TYPE_CLASS_MISMATCH`, maar de tabel is **te streng** (zie onder) |
 | M18 | `wheelType` past bij type en klasse (bijv. motor met `VWT_BIKE`) | WARN | nee | meta_ref §8 (backlog) | nee |
 | M19 | Handling binnen de bereiken van het profiel (klasse) | WARN | voorstel | handling_template §8 | `HANDLING_RANGE_OUTSIDE`, alleen met een UI-profiel; ging in geen enkel rapport af |
@@ -96,7 +96,7 @@ Deze controles kijken naar **alle** resources, niet één. VehicleTool deed het 
 | X4 | Zelfde kit-id twee keer | FAIL | voorstel: vrij id (B9) | CARCOLS_REF §4 | binnen de pack: `verify_modkit_ids.py` en een blokkade bij het toevoegen; die blokkade kijkt naar de **bron**-`carcols`, terwijl de pack de template krijgt (zo kregen alle vier id 10000) |
 | X5 | Vanilla-naam in `stream/` (vervangt een game-bestand voor iedereen) | WARN | nee | nieuw (Q-T6) | nee |
 | X6 | Identieke `.ytd` onder twee namen (bijv. `brickadeb.ytd` = `brickadebr.ytd`) | INFO | voorstel: delen via `txdRelationships` | nieuw (gevonden met md5) | nee |
-| X7 | Zelfde bestandsnaam twee keer in `stream/` van **één** resource (in submappen). FiveM gebruikt alleen de bestandsnaam, dus ze botsen ook dan. Gezien: `spoiler_2.yft` bij drie auto's in `PLOKS_CARS`, met verschillende inhoud; zeven `_manifest.ymf` in de Lore-pack | FAIL (andere inhoud) / INFO (zelfde inhoud) | nee | `official` voor de naam (broncode `ResourceStreamComponent.cpp`); welke wint is open (Q-S6) | nee |
+| X7 | Zelfde bestandsnaam twee keer in `stream/` van **één** resource (in submappen). FiveM gebruikt alleen de bestandsnaam, dus ze botsen ook dan. Gezien: `spoiler_2.yft` bij drie auto's in `PLOKS_CARS`, met verschillende inhoud; zes `_manifest.ymf` in de Lore-pack | FAIL (andere inhoud) / INFO (zelfde inhoud) | nee | `official`, broncode (`ResourceStreamComponent.cpp`): de naam telt, en binnen één resource houdt de server stil het eerst gevonden bestand; tussen resources open (Q-S6) | nee |
 
 ## A. Audio
 

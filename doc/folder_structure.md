@@ -25,15 +25,15 @@ Vijftien manieren in onze eigen map, de repo, de testdata en de downloads. Allem
 | J | **Split-beleid** | `VehicleTool/docs/META_SPLIT_POLICY.md` | per model één map, `carcols` gedeeld in `data/common/` of per model ingekort | `stream/<modelName>/` | handmatig |
 | K | **Engine-geluiden** | `research/Custom Engine Sounds` | geen | `audioconfig/` + `sfx/dlc_<naam>/` | `fx_version 'adamant'`, plus een `__resource.lua` ernaast ("use only one") |
 | L | **Eigen converter** | `trp_rpf_to_fivem_converter` | `data/` (plat, ook `content.xml` en `setup2.xml` van de DLC) | `stream/` (plat; dubbele namen worden hernoemd) | geen |
-| M | **Pack per merk** | downloads: `PLOKS_CARS` (189 auto's) | `data/[MERK]/<model>/*.meta` | `stream/[MERK]/<model>/` | per type één glob: `data_file 'HANDLING_FILE' 'data/**/handling*.meta'` |
-| N | **Pack per merk, met volledige namen** | downloads: `Lore_Friendly_Car_Pack` (72 voertuigen) | `data/[MERK]/<Merk Model Custom>/*.meta`, met spaties en `'` in de mapnaam | `stream/[MERK]/<zelfde naam>/`, plus `audio/` | élke meta onder élk type: `data_file 'HANDLING_FILE' 'data/**/*.meta'` enz. (Q-S13) |
+| M | **Pack per merk** | downloads: `PLOKS_CARS` (191 voertuigen) | `data/[MERK]/<model>/*.meta` | `stream/[MERK]/<model>/` | per type één glob: `data_file 'HANDLING_FILE' 'data/**/handling*.meta'` |
+| N | **Pack per merk, met volledige namen** | downloads: `Lore_Friendly_Car_Pack` (72 voertuigen) | `data/[MERK]/<Merk Model Custom>/*.meta`, met spaties en `'` in de mapnaam | `stream/[MERK]/<zelfde naam>/`, plus `audio/` | élke meta onder negen types: `data_file 'HANDLING_FILE' 'data/**/*.meta'` enz. (Q-S13) |
 | O | **Pack met losse geluids-resources erin** | downloads: `lds-lorevehicles` (98 voertuigen) | `data/<model>/*.meta` | `stream/vehicles/<model>/` en `stream/vehmods/<model>/` | globs; de 29 geluids-resources staan in `[lorevehicles-sounds]/` **binnen** de resource en laden daardoor nooit (§5) |
 
 Wat opvalt:
 
-- **De mapnaam van de meta's verschilt** (`common/`, `data/`, `meta/`, de root). Voor FiveM telt alleen het pad in `data_file` (§5). Of de game zelf iets met de map doet: `aanname`, te testen (Q-S1 in [open_questions.md](open_questions.md)).
+- **De mapnaam van de meta's verschilt** (`common/`, `data/`, `meta/`, de root). Voor FiveM telt alleen het pad in `data_file` ([meta_files.md](meta_files.md) §10). Of de game zelf iets met de map doet: `aanname`, te testen (Q-S1 in [open_questions.md](open_questions.md)).
 - **De bestandsnaam van een meta mag vrij zijn.** Packs gebruiken `vehiclelayouts_bcat.meta`, `vehicleweapon_shermav.meta` en `weaponminigun.meta`; de repo zet de voertuignaam ervoor (`ferrari_f40_handling.meta`). Het `data_file`-type bepaalt wat het is. `community`, te testen (Q-S2).
-- **Globs in `data_file`** (`data/**/handling.meta`) gebruiken DriveV, onze pack en alle drie de downloads. Dat FiveM ze leest, ook `**`, en hoofdlettergevoelig, staat in de broncode (`official`, §5); in-game nog bevestigen (Q-S3). Let op: Python (`PurePosixPath.match`, gebruikt door VehicleTool) leest `**` anders dan FiveM.
+- **Globs in `data_file`** (`data/**/handling.meta`) gebruiken DriveV, onze pack en alle drie de downloads. Dat FiveM ze leest, staat in de broncode (`official`, [meta_files.md](meta_files.md) §10): `**` werkt, `*` en `?` alleen in de bestandsnaam, en hoofdlettergevoelig. In-game nog bevestigen (Q-S3). Let op: Python (`PurePosixPath.match`, gebruikt door VehicleTool) leest `**` anders dan FiveM.
 - **De converter zet zowel elke meta los als `'common/*.meta'` in `files`.** Dubbel, maar onschuldig. `tested` (gelezen).
 - **`stream/` met submappen** komt veel voor (VehicleTool, de drie downloads). FiveM streamt submappen mee en kijkt alleen naar de bestandsnaam (`official`, §5).
 
@@ -46,8 +46,8 @@ Mark vroeg (21 okt): "liveries horen bij 1 voertuig toch?" **Ja, voor soort 1, 2
 | Soort | Hoe | Voorbeeld | Bestanden | Hoort bij |
 |-------|-----|-----------|-----------|-----------|
 | 1. **Livery in de texture** | Livery-textures in de `.ytd` van het voertuig; aan/uit per slot in `carvariations.meta` `<liveries>`; namen via `liveryNames` in `carcols` | `strman/[Template]/strman_sign_1.dds` (een sjabloon voor zo'n livery). In de downloads gebruikt geen enkel voertuig `<liveries>` | `<model>.ytd` | hetzelfde model |
-| 2. **Livery als mod-onderdeel** | Elke livery is een eigen `.yft`, als `VMT_LIVERY_MOD` in een modkit in `carcols.meta` | `batic_livery1.yft` … `batic_livery18.yft`, `kriety2_liv1.yft`; in de downloads 95 kits met `VMT_LIVERY_MOD`, tot 31 per kit | `<model>_livery<n>.yft` + kit in `carcols` | hetzelfde model |
-| 3. **Tweede livery-laag** | `livery2` / dak-livery | (niet in testdata; `livery2Names` komt wel voor in `carcols` van de downloads) | nog uitzoeken (Q-M7) | hetzelfde model |
+| 2. **Livery als mod-onderdeel** | Elke livery is een eigen `.yft`, als `VMT_LIVERY_MOD` in een modkit in `carcols.meta` | `batic_livery1.yft` … `batic_livery18.yft`, `kriety2_liv1.yft`; in de downloads minstens 95 kits met `VMT_LIVERY_MOD`, tot 71 per kit | `<model>_livery<n>.yft` + kit in `carcols` | hetzelfde model |
+| 3. **Tweede livery-laag** | `livery2` / dak-livery | (niet in testdata; in de downloads alleen een lege `<livery2Names/>` in `carcols`) | nog uitzoeken (Q-M7) | hetzelfde model |
 | 4. **Apart model per uiterlijk** | Elke variant een eigen `modelName`, vaak dezelfde handling | `lsfd` … `lsfd5`, `halfback` + `halfback2` (USSS) | eigen `.yft`/`.ytd` en eigen entry in `vehicles.meta` | apart voertuig (B23) |
 
 Bronnen: GTAMods en Dawnstar (`community`, zie [sources.md](sources.md)), samengevat in [meta_files.md](meta_files.md).
@@ -67,6 +67,25 @@ In rapporten gebruikten we de notatie `livery_group = <modelName>`. Bronbestande
 - Een server krijgt honderden resources. Wat dat kost (starttijd, joinen, geheugen), is Q-S10 (prio hoog, B2).
 - Gedeelde dingen (sirenes, lichten, wielen) staan per voertuig in de eigen `carcols.meta`. Hun id's moeten over de hele server uniek zijn (X4 in [validation_rules.md](validation_rules.md)).
 - Een pack (zoals M, N en O hierboven) splitst de tool bij de intake naar losse resources (B2, functie F-D2 in [tool_functions.md](tool_functions.md)).
+
+### Wat kost één resource per voertuig? (Q-S10, eerste antwoord)
+
+Uit de FiveM-broncode (`official`, master van 20 okt 2026, nog niet gemeten) en het Cfx-forum (`community`), uitgezocht op 21 okt 2026. Bronnen in [sources.md](sources.md).
+
+| Wat | Eén pack | Eén resource per voertuig |
+|-----|----------|---------------------------|
+| Limiet | De harde grens is 65.535 gestreamde bestanden per lijst (`.ytd`'s hebben een eigen lijst). Die telt bestanden, niet resources. In de server-code staat geen limiet op het aantal resources | zelfde |
+| Tijdens het spelen | Een resource zonder scripts krijgt geen script-runtime en kost per tick niets | zelfde |
+| Server starten | Per resource: het manifest lezen en `resource.rpf` hashen; `stream/` alleen opnieuw hashen als er iets veranderd is. Een groot pack kan bij de eerste start zo lang duren dat txAdmin denkt dat de server vastzit (`community`) | meer kleine stappen, samen ongeveer hetzelfde werk |
+| Joinen, eerste keer of na een update | Eén `resource.rpf` | De client laadt resources één voor één: ongeveer één netwerk-rondje per resource. Bij 400 resources en 50 ms per rondje is dat zo'n 20 seconden extra (`aanname`); met een warme cache milliseconden |
+| Meta's laden | Elke `vehicles.meta` laat de client twee keer de hele texture-pool doorlopen. Dat telt per bestand: alleen een pack met samengevoegde meta's is hier sneller | één `vehicles.meta` per voertuig |
+| Eén voertuig bijwerken | De server hasht de hele `stream/` van het pack opnieuw, op de hoofdthread (de server hapert); verandert er een meta, dan downloaden spelers de `resource.rpf` van het hele pack opnieuw | alleen dat voertuig |
+| Herstarten tijdens het spelen | Ontlaadt alle modellen van het pack bij alle spelers; kans op een crash als zo'n voertuig nog rondrijdt (`community`) | raakt één model |
+| Dezelfde naam in `stream/` | Binnen één resource houdt de server stil het eerste bestand dat hij vindt | botsing tussen resources: wie wint is open (Q-S6) |
+
+Forumgebruikers noemen het verschil klein; een officiële uitspraak van Cfx over pack tegen losse resources vonden we niet. De grenzen van "250", "400" of "1500 resources" die op het forum rondgaan, staan niet in de huidige code (`community`).
+
+Nog te meten op de dev-server: dezelfde voertuigen als één pack en als losse resources, met en zonder `cache/files/`. Meten: de tijd tussen `onResourceStarting` en `onResourceStart` op de server, haperingen in de console, de join-tijd in `CitizenFX.log` (met `developer 1` in F8), en `assetscount` in de client-console.
 
 ### Voorstel
 
@@ -185,13 +204,13 @@ Voor een voertuig horen vooral `.yft`, `.ytd`, `.ydr` (wielen) en soms `.ycd`. D
 
 **`stream/` hoeft niet in `files {}`.** FiveM streamt de map `stream/` vanzelf. Zet je `.y*`-bestanden uit `stream/` toch in `files {}`, dan haalt de server ze daar weer uit, behalve `.ytyp` (`official`, `ResourceFilesComponent.cpp`). `files {}` is voor bestanden die de client moet downloaden, zoals de meta's achter `data_file`. VehicleTool meldde elk stream-bestand als "niet in het manifest": 164 van de 210 waarschuwingen in de laatste runs, allemaal vals alarm.
 
-**`_manifest.ymf`** staat in sommige resources in `stream/` (gezien in de bron van `pigeonp`). In een gedeelde pack-`stream/` botst hij met die van een ander voertuig: de Lore-pack uit de downloads heeft er zeven (Q-S11). Bij één resource per voertuig speelt dat niet.
+**`_manifest.ymf`** staat in sommige resources in `stream/` (gezien in de bron van `pigeonp`). In een gedeelde pack-`stream/` botst hij met die van een ander voertuig: de Lore-pack uit de downloads heeft er zes (Q-S11). Bij één resource per voertuig speelt dat niet.
 
 ### Unieke namen
 
-Een bestandsnaam in `stream/` moet uniek zijn over alle resources op de server. FiveM kijkt alleen naar de bestandsnaam, niet naar de map (`official`, §5). Twee bestanden met dezelfde naam botsen dus ook binnen één resource. Welke dan wint, weten we niet (Q-S6).
+Een bestandsnaam in `stream/` moet uniek zijn over alle resources op de server. FiveM kijkt alleen naar de bestandsnaam, niet naar de map (`official`, §5). Twee bestanden met dezelfde naam botsen dus ook binnen één resource; dan houdt de server stil het eerste bestand dat hij vindt (`official`, `ResourceStreamComponent.cpp`). Wie er wint tussen twee resources, weten we niet (Q-S6).
 
-In de downloads komt dat echt voor: in `PLOKS_CARS` heten de spoilers van drie verschillende auto's `spoiler_2.yft` (andere inhoud), en tussen de Lore-pack en `lds-lorevehicles` botsen 1.474 namen, omdat ze voor een deel dezelfde voertuigen bevatten ([test_data.md](test_data.md#downloads-in-vehicles-21-okt-2026)). VehicleTool controleerde daarom al op botsende namen (X1 en X7 in [validation_rules.md](validation_rules.md)).
+In de downloads komt dat echt voor: in `PLOKS_CARS` heten de spoilers van drie verschillende auto's `spoiler_2.yft` (andere inhoud), en tussen de Lore-pack en `lds-lorevehicles` botsen 1.472 namen, omdat ze voor een deel dezelfde voertuigen bevatten ([test_data.md](test_data.md#downloads-in-vehicles-21-okt-2026)). VehicleTool controleerde daarom al op botsende namen (X1 en X7 in [validation_rules.md](validation_rules.md)).
 
 In `11john11_sapo_pack` zitten ook map-bestanden (`sc1_19_*.ytd/.ydr`) tussen de voertuigen. Een voertuig-pack hoort zulke bestanden niet te hebben: de tool moet ze melden.
 
@@ -213,9 +232,9 @@ In `11john11_sapo_pack` zitten ook map-bestanden (`sc1_19_*.ytd/.ydr`) tussen de
 
 **`stream/`** (`ResourceStreamComponent.cpp`):
 
-- Alleen `<resource>/stream/` telt, direct in de root van de resource.
+- Automatisch telt alleen `<resource>/stream/`, direct in de root van de resource. (Een script kan met de native `REGISTER_RESOURCE_ASSET` nog een los bestand aanmelden; voor voertuigen is dat niet gebruikelijk.)
 - De server loopt die map **recursief** door; submappen die met `.` beginnen slaat hij over.
-- De naam in de game is **alleen de bestandsnaam**, zonder map. Hij wordt opgeslagen in 128 tekens; een langere naam wordt afgekapt.
+- De naam in de game is **alleen de bestandsnaam**, zonder map. Hij wordt opgeslagen in een veld van 128 tekens; een naam van 128 tekens of meer loopt daar over. Houd namen dus korter.
 - Een bestand `<naam>.stream_raw` naast een bestand telt niet als eigen bestand.
 - Elk bestand met een RSC-header krijgt een geheugencontrole: zie [textures.md](textures.md#de-melding-van-fivem).
 

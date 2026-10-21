@@ -59,13 +59,13 @@ Alle cijfers per bestand staan in [test_data.md](test_data.md).
 
 1. **De grootte op schijf zegt niets.** Een `.ytd` van 1,9 MB vraagt 76 MiB geheugen. Het bestand is gecomprimeerd; grote, egale textures comprimeren extreem goed. Een check op bestandsgrootte (zoals "`.ytd` > 16 MB" in `docs/plan.md`) mist dus juist de probleemgevallen.
 2. **Het probleem zit per bestand.** Elk bestand heeft zijn eigen header en zijn eigen grootte, en FiveM meet ook per bestand (`official`, zie hieronder).
-3. **Textures (phys) zijn het probleem, modellen (virt) minder.** In onze testdata zit geen `.yft` boven de 24 MiB virt, wel veel `.ytd`'s boven de 16 MiB phys. Let op: ook een `.yft` kan veel phys hebben, als de textures ín het model zitten. In de downloads van 21 okt is dat zelfs het vaakst: 1.197 van de 1.352 bestanden boven 16 MiB zijn `.yft`'s, bijna allemaal door phys ([test_data.md](test_data.md#downloads-in-vehicles-21-okt-2026)).
+3. **Textures (phys) zijn het probleem, modellen (virt) minder.** In onze testdata zit geen `.yft` boven de 24 MiB virt, wel veel `.ytd`'s boven de 16 MiB phys. Let op: ook een `.yft` kan veel phys hebben, als de textures ín het model zitten. In de downloads van 21 okt is dat zelfs het vaakst: 1.197 van de 1.352 bestanden boven 16 MiB zijn `.yft`'s, 1.029 daarvan door phys en 168 door virt ([test_data.md](test_data.md#downloads-in-vehicles-21-okt-2026)).
 
 ## De melding van FiveM
 
 Mark zag de melding bij `strman`. Hoe hij werkt, staat in de FiveM-broncode (`official`, `code/components/citizen-server-impl/src/ResourceStreamComponent.cpp`, functies `ValidateSize` en `ConvertRSC7Size`, master 20 okt 2026; Q-T1):
 
-- De **server** controleert bij het starten van een resource elk bestand in `stream/` met een RSC7-, RSC8- of RSC5-header. Alleen voor GTA V.
+- De **server** controleert bij het starten van een resource elk bestand in `stream/` met een RSC7-, RSC8- of RSC5-header. Alleen voor GTA V. Het aantal meldingen staat daarna in "Started resource x (n warnings)" (`ServerResources.cpp`).
 - Per bestand twee getallen: physical en virtual, elk apart. Ze worden berekend met precies dezelfde formule als ons script (`ConvertRSC7Size`).
 - De grenzen zijn hard "groter dan":
 

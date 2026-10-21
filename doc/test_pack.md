@@ -10,7 +10,7 @@ De voertuigen hieronder komen uit de scan van de downloads in `[Vehicles]` ([tes
 
 **Waarom:**
 
-1. **De downloads zelf zijn te groot en te verweven om mee te testen.** Ruim 10 GB, 362 voertuigen, 1.352 bestanden boven de oversized-grens, en packs die elkaar overlappen: de Lore-pack en `lds-lorevehicles` delen 20 voertuigen, 1.474 bestandsnamen en 29 kit-id's. Laad je alles tegelijk, dan zie je niet welk probleem welk effect heeft.
+1. **De downloads zelf zijn te groot en te verweven om mee te testen.** Ruim 10 GB, 364 voertuigen, 1.352 bestanden boven de oversized-grens, en packs die elkaar overlappen: de Lore-pack en `lds-lorevehicles` delen 20 voertuigen, 1.472 bestandsnamen en 21 kit-id's. Laad je alles tegelijk, dan zie je niet welk probleem welk effect heeft.
 2. **Bijna elke open vraag is "slikt de game dit?"** (Q-M16, Q-S13, Q-M15, Q-M17, Q-S6, …). Dat zie je alleen goed met één probleem tegelijk.
 3. **Dezelfde set test later de tool.** Elk geval krijgt een verwacht resultaat: welke controle moet afgaan ([validation_rules.md](validation_rules.md)). Als de tool verandert, moet hij op deze set nog steeds hetzelfde vinden.
 4. **Klein en los te starten.** Elk geval is een eigen resource; via dolu start en stop je er één tegelijk.
@@ -20,6 +20,7 @@ De voertuigen hieronder komen uit de scan van de downloads in `[Vehicles]` ([tes
 - **Eén probleem per geval**, zo goed als het kan. Gevallen uit het wild hebben vaak meer dan één probleem; de bijvangst staat er dan bij.
 - **Nooit repareren.** De bestanden blijven zoals ze gedownload zijn; daar gaat het om.
 - **Eén geval tegelijk** draaien, behalve de botsingsgevallen: die bestaan juist uit twee resources.
+- **Niet samen met de downloads.** Zolang `ensure [Vehicles]` in `server.cfg` staat, starten `lds-lorevehicles`, `kriegerty2`, `strman` en `zaccflatlit` bij elke serverstart, en die botsen met hun kopieën in het pakket (punt 4 onderaan).
 - **De voertuigen niet in git.** Ze zijn van andere makers, en samen honderden MB's. In de repo komen alleen de beschrijvingen, de verwachte uitkomsten en een lijst waar elk bestand vandaan komt, zodat het pakket opnieuw te maken is.
 
 ## Twee soorten gevallen
@@ -56,6 +57,8 @@ resources/
 
 Samen 31 gevallen (35 resources: de paren en de geluids-resource van `vt_01` tellen dubbel), ongeveer 430 MB. Volgorde zoals Mark de onderdelen wil (B12).
 
+Bijvangst die niet bij elk geval staat: bijna alle voertuigen uit `lds-lorevehicles`, en veel uit de andere packs, hebben geen tekst voor `gameName` (M16).
+
 ### 1. Structuur, templates en meta's
 
 | Geval | Voertuig (bron) | MB | Probleem | Vraag / controle |
@@ -63,24 +66,24 @@ Samen 31 gevallen (35 resources: de paren en de geluids-resource van `vt_01` tel
 | `vt_00_baseline` | `tltypes` (PLOKS) | 7,8 | geen: de scan vindt niets, naam via `AddTextEntry`, niets boven 16 MiB | referentie en basis voor de gemaakte gevallen |
 | `vt_01_nested_resource` | `zionks` (lds), met zijn geluids-resource eerst ín, dan naast de resource | 10 | een resource in een resource laadt niet; dan ontbreekt het eigen geluid | R13 |
 | `vt_02_xml_comment` | `bolide` (PLOKS) | 13,4 | `<!------…---->` in `vehicles.meta` | Q-M16, M1 |
-| `vt_03_xml_wrong_close` | `84rx7k` (PLOKS) | 18,5 | `carcols.meta` sluit `<Kits>` af met `</Lights>` | Q-M16, M1 |
+| `vt_03_xml_wrong_close` | `84rx7k` (PLOKS) | 18,5 | `carcols.meta`: `<Kits>` gaat nooit dicht, en de kit staat binnen `<Lights>` | Q-M16, M1 |
 | `vt_04_xml_nul_bytes` | `imperial` (lds) | 16,3 | NUL-bytes aan het eind van `carvariations.meta` | Q-M16, M1 |
-| `vt_05_xml_space_before_decl` | `gstghell1` (lds) | 6,0 | twee spaties vóór `<?xml` in `carcols.meta` (bijvangst: eigen geluid zit in een geneste resource) | Q-M16, M1 |
+| `vt_05_xml_space_before_decl` | `gstghell1` (lds) | 6,0 | drie spaties vóór `<?xml` in `carcols.meta` (bijvangst: eigen geluid zit in een geneste resource) | Q-M16, M1 |
 | `vt_06_model_without_yft` | `accolade` (lds) | 4,8 | `vehicles.meta` noemt ook `accolade2`, maar daar is geen `.yft` voor | M4 |
 | `vt_07_no_carvariations` | `sandero` (PLOKS) | 8,6 | geen `carvariations.meta` (bijvangst: handling van de vanilla `BALLER`) | Q-M9 |
 | `vt_08_invalid_class` | `stingray` (PLOKS) | 31,1 | `vehicleClass` `VC_SPORTS` bestaat niet; `gameName` met een spatie (`corvette c8`) | Q-M17, M27 |
 | `vt_09_no_label` | `blistacr` (lds) | 2,3 | geen tekst voor `gameName` | Q-M18, M16 |
-| `vt_10_unknown_audio` | `hellenstorm` (lds) | 10,5 | `audioNameHash` die nergens bestaat | M12 |
+| `vt_10_unknown_audio` | `hellenstorm` (lds) | 10,5 | `audioNameHash` (`hellenstorm`) die niet in de downloads staat en geen vanilla-voertuignaam is | M12 |
 | `vt_11_vanilla_handling` | `surano3` (lds) | 5,3 | `handlingId` `SURANO` (vanilla): mag, verwacht geen fout | M28 |
-| `vt_12_kit_not_defined` | `yosemiteswb` (lds) | 2,8 | `carvariations` noemt `0_suv_modkit`, die nergens staat | M8 |
-| `vt_13_livery_mods` | `atlas` (lds) | 6,2 | geen probleem: 16 liveries als mod-onderdeel (livery soort 2) | M22, [folder_structure.md](folder_structure.md) §2 |
+| `vt_12_kit_not_defined` | `yosemiteswb` (lds) | 2,8 | `carvariations` noemt `0_suv_modkit`, die niet in de eigen `carcols` staat (of hij in vanilla bestaat: Q-M19) | M8 |
+| `vt_13_livery_mods` | `atlas` (lds) | 6,2 | geen echt probleem: 16 liveries als mod-onderdeel (livery soort 2) | M22, [folder_structure.md](folder_structure.md) §2 |
 
 ### 2. Manifest
 
 | Geval | Voertuig (bron) | MB | Probleem | Vraag / controle |
 |-------|-----------------|---:|----------|------------------|
 | `vt_20_unknown_types` | `kriegerty2` | 7 | `DLCTEXT_FILE` en `VEHICLE_SHOP_FILE` staan niet in de officiële lijst | Q-M15, R14 |
-| `vt_21_all_types_glob` | `buffaloh` (Lore), met het manifest van de Lore-pack | 5,6 | elke meta onder tien types, ook twee onofficiële | Q-S13, R6 |
+| `vt_21_all_types_glob` | `buffaloh` (Lore), met het manifest van de Lore-pack | 5,6 | elke meta onder negen types, waarvan twee onofficieel | Q-S13, R6 |
 | `vt_22_old_manifest` | `zaccflatlit` | 18,3 | `__resource.lua`, en twee meta's uit het manifest ontbreken | Q-S9, R2, R4 |
 
 ### 3. Botsingen (paren: twee resources tegelijk)
@@ -91,7 +94,7 @@ Samen 31 gevallen (35 resources: de paren en de geluids-resource van `vt_01` tel
 | `vt_31_stream_name_pair` | `f430s` + `gs350` (PLOKS) | 32,4 | allebei `spoiler_2.yft` en `spoiler_3.yft`, met andere inhoud | Q-S6, X1, X7 |
 | `vt_32_same_vehicle_twice` | `vorstand` uit lds én uit Lore | 22,2 | zelfde model, stream-namen en kit-id 701 | X1, X2, X4 |
 | `vt_33_vanilla_vehicle` | `futo2` (Lore) | 6,6 | vervangt de vanilla Futo GTX (bijvangst: `fInitialDriveForce` 4,79) | X5, Q-T6 |
-| `vt_34_vanilla_kit` | `wildtrak` (PLOKS) | 26,2 | definieert de vanilla-kits `268_hermes_modkit` en `269_revolter_modkit` opnieuw | Q-M19, M21 |
+| `vt_34_vanilla_kit` | `wildtrak` (PLOKS) | 26,2 | definieert kits met de naam van vanilla-voertuigen: `268_hermes_modkit` en `269_revolter_modkit` | Q-M19, M21 |
 
 ### 4. Textures
 
@@ -123,5 +126,5 @@ Samen 31 gevallen (35 resources: de paren en de geluids-resource van `vt_01` tel
 1. **Maken we het pakket?** (B25) Zo ja: eerst de gevallen van prioriteit 1 en 2 (17 gevallen, ±175 MB), de rest daarna.
 2. **Ook gemaakte gevallen** vanaf `vt_00`, voor de systematische tests?
 3. **Plek en namen:** `resources/[vehicletests]/vt_<nn>_<onderwerp>`, niet in `server.cfg`, starten via dolu. Of liever een andere plek of prefix?
-4. **De downloads:** nu start `ensure [Vehicles]` bij elke serverstart `lds-lorevehicles` (98 voertuigen, 1,7 GB, 469 oversized-meldingen), `kriegerty2`, `strman` en `zaccflatlit`. Voorstel: de ruwe downloads buiten `resources/` bewaren (bijvoorbeeld `F:\fivem_dev\vehicle_sources\`) en alleen kopieën in het testpakket zetten. Dat scheelt ook de opstarttijd: de server berekent bij elke nieuwe of gewijzigde stream-file een hash.
+4. **De downloads:** het pakket werkt pas als die niet tegelijk draaien. Nu start `ensure [Vehicles]` bij elke serverstart `lds-lorevehicles` (98 voertuigen, 1,7 GB, 469 oversized-meldingen), `kriegerty2`, `strman` en `zaccflatlit`. Voorstel: de ruwe downloads buiten `resources/` bewaren (bijvoorbeeld `F:\fivem_dev\vehicle_sources\`) en alleen kopieën in het testpakket zetten. Dat scheelt ook de opstarttijd: de server berekent bij elke nieuwe of gewijzigde stream-file een hash.
 5. **Niet in git:** akkoord dat alleen de beschrijvingen en de bronlijst in de repo komen?

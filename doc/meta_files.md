@@ -151,9 +151,9 @@ Conclusie: niemand heeft getest wat écht nodig is. Dat wordt test Q-S8 op de de
 | Gangbare naam: `<id>_<model>_modkit`, bijv. `64378_kriegerty2_modkit` | `tested` (gelezen) |
 | Het `id` moet uniek zijn over alles wat de server laadt (vanilla en andere packs); dubbel = kits overlappen, LSC-opties breken | `community` |
 | Vanilla gebruikt o.a. de bereiken 83–91 en 96–453 (met uitzonderingen) en 999 (een placeholder, met hydraulics te maken). Bron: de kitName-lijst van Mentozz (Cfx-forum, 2021); geen garantie na latere game-updates | `community` |
-| Geldig bereik 0–1023 (GTAMods); hoger kan "overflowen" | **twijfel**: in onze testdata hebben kits ook de id's `1101`–`1105`, `3995` en `64378` (Q-M4). Let op: `941` (kriegerty2) is een licht-id en `6001`–`6013` (USSS) zijn sirene-id's; die tellen niet als kit. In de downloads van 21 okt liggen 85 van de 241 kit-id's boven 1023, tot `123123135` (`PLOKS_CARS`, `yPG205t16`) |
-| Add-ons die een **vanilla-kit** opnieuw definiëren | `tested` (gelezen, downloads 21 okt): `PLOKS_CARS/[FORD]/wildtrak/carcols.meta` definieert `268_hermes_modkit` en `269_revolter_modkit` (de kits van de vanilla Hermes en Revolter), vijf auto's definiëren `0_default_modkit` (id 0) opnieuw, leeg. Wat dat in de game doet (vervangt het de vanilla-kit?), is een test (Q-M19) |
-| Lege "placeholder"-kits met hetzelfde id | `tested` (gelezen): twaalf auto's in `PLOKS_CARS` hebben elk een eigen kit met id 135 en nul onderdelen |
+| Geldig bereik 0–1023 (GTAMods); hoger kan "overflowen" | **twijfel**: in onze testdata hebben kits ook de id's `1101`–`1105`, `3995` en `64378` (Q-M4). Let op: `941` (kriegerty2) is een licht-id en `6001`–`6013` (USSS) zijn sirene-id's; die tellen niet als kit. In de downloads van 21 okt liggen minstens 85 van de 241 kit-id's die we konden lezen boven 1023, tot `123123135` (`PLOKS_CARS`, `yPG205t16`); acht `carcols.meta` waren niet te lezen |
+| Add-ons met kits die de naam van een vanilla-kit dragen | `tested` (gelezen, downloads 21 okt): `PLOKS_CARS/[FORD]/wildtrak/carcols.meta` definieert `268_hermes_modkit` en `269_revolter_modkit` (Hermes en Revolter zijn vanilla-voertuigen; of dit ook hun kit-id's zijn, is nog niet nagekeken), en vijf auto's definiëren `0_default_modkit` (id 0) opnieuw, leeg. Wat dat in de game doet (vervangt het de vanilla-kit?), is een test (Q-M19) |
+| Lege "placeholder"-kits met hetzelfde id | `tested` (gelezen): elf auto's in `PLOKS_CARS` hebben elk een eigen kit met id 135 en nul onderdelen |
 | Nooit automatisch hernummeren; wel een index bijhouden | eerdere keuze (zie [decisions.md](decisions.md), B9) |
 | Een id met de hand reserveren: in VehicleTool een regel in `pack/modkit_ids.json` met `"source": "manual"` (zonder `handlingId` = gereserveerd); zo'n regel blijft staan en blokkeert dat id | VehicleTool (`README.md`, `PACK_VALIDATION.md`) |
 
@@ -197,7 +197,7 @@ Wat we nog nodig hebben: één set **correcte** templates per type, gemaakt uit 
 
 ### Officiële lijst
 
-De pagina [Data files](https://docs.fivem.net/docs/game-references/data-files/) op docs.fivem.net noemt ruim 90 types (`official`, gelezen 21 okt 2026). Voor voertuigen tellen vooral: `VEHICLE_METADATA_FILE`, `HANDLING_FILE`, `VEHICLE_VARIATION_FILE`, `CARCOLS_FILE`, `VEHICLE_LAYOUTS_FILE`, `VEHICLE_SHOP_DLC_FILE`, `CONTENT_UNLOCKING_META_FILE`, `VEHICLEEXTRAS_FILE`, `VFXVEHICLEINFO_FILE`, `PTFXASSETINFO_FILE`, `WEAPONINFO_FILE`, `DLC_ITYP_REQUEST`, `AMBIENT_VEHICLE_MODEL_SET_FILE`, de `AUDIO_*`-types en de drie `FIVEM_LOVES_YOU_*`-types. De pagina zegt niet welke types in FiveM-resources werken.
+De pagina [Data files](https://docs.fivem.net/docs/game-references/data-files/) op docs.fivem.net noemt 89 types (`official`, gelezen 21 okt 2026). Voor voertuigen tellen vooral: `VEHICLE_METADATA_FILE`, `HANDLING_FILE`, `VEHICLE_VARIATION_FILE`, `CARCOLS_FILE`, `VEHICLE_LAYOUTS_FILE`, `VEHICLE_SHOP_DLC_FILE`, `CONTENT_UNLOCKING_META_FILE`, `VEHICLEEXTRAS_FILE`, `VFXVEHICLEINFO_FILE`, `PTFXASSETINFO_FILE`, `WEAPONINFO_FILE`, `DLC_ITYP_REQUEST`, `AMBIENT_VEHICLE_MODEL_SET_FILE`, de `AUDIO_*`-types en de drie `FIVEM_LOVES_YOU_*`-types. De pagina zegt niet welke types in FiveM-resources werken.
 
 Niet in de lijst, maar wel gezien:
 
@@ -214,10 +214,11 @@ Wat FiveM met zo'n type doet (stil negeren of een melding), is Q-M15.
 
 `official`, gelezen in de FiveM-broncode (`code/components/citizen-resources-gta/src/ResourcesTest.cpp` en `citizen-resources-core/src/ResourceMetaDataComponent.cpp`, master 20 okt 2026). Nog niet in-game getest.
 
-- De client verwerkt de regels als de resource start. Elk pad gaat door dezelfde glob als `files`: `*` en `?` binnen één naam, `**` voor nul of meer mappen. **Hoofdlettergevoelig**: de namen worden met `std::regex` vergeleken, zonder `icase`.
-- Elk gevonden bestand wordt met het opgegeven type in de laadlijst van de game gezet. Een glob die alles vindt (`data/**/*.meta`), zet dus **elk** bestand onder dat type. De Lore-pack doet dat voor tien types tegelijk (Q-S13).
-- Vindt een pad **zonder** `*` niets, dan geeft FiveM het pad toch aan de game. Zo werken de audio-regels: `'audio/x_game.dat'` bestaat niet, maar de game maakt er zelf `x_game.dat151.rel` van. Vindt een glob **met** `*` niets, dan gebeurt er stil niets.
+- De client verwerkt de regels als de resource start. Elk pad gaat door dezelfde glob als `files`. `**` staat voor nul of meer mappen en werkt. `*` en `?` werken alleen betrouwbaar in de bestandsnaam, het laatste deel van het pad: bij een `*` in een mapnaam laat de code het teken vóór de `/` weg, zodat `data/*/handling.meta` niets vindt, en een `?` in een mapnaam telt als gewoon teken. **Hoofdlettergevoelig**: de namen worden met `std::regex` vergeleken, zonder `icase`.
+- Elk gevonden bestand wordt met het opgegeven type in de laadlijst van de game gezet. Een glob die alles vindt (`data/**/*.meta`), zet dus **elk** bestand onder dat type. De Lore-pack doet dat voor negen types tegelijk (Q-S13).
+- Vindt een pad **zonder** `*` niets, dan geeft FiveM het pad toch aan de game. Daardoor werken de audio-regels: `'audio/x_game.dat'` bestaat niet als bestand, maar het pad komt bij de game, die `x_game.dat151.rel` laadt (dat laatste is `aanname`: zo staat het in werkende resources, zie [audio.md](audio.md)). Vindt een glob **met** `*` niets, dan gebeurt er stil niets.
 - De glob kijkt naar de bestanden van de resource zoals de client ze heeft, en de client heeft alleen wat hij gedownload heeft. Daarom moeten de meta's ook in `files {}` staan (`aanname`, afgeleid; R15 in [validation_rules.md](validation_rules.md)).
+- De server controleert `data_file` niet. Bij het starten van een resource meldt hij wel ontbrekende `files`, `client_script`, `server_script` en `shared_script` ("could not find file `…` (defined in fxmanifest.lua:12)"), maar alleen als het begin van het pad niet bestaat: een glob in een bestaande map die niets vindt (`data/*.meta`) meldt hij niet. Ook de oversized-bestanden meldt hij, en telt die op in "Started resource x (n warnings)" (`ServerResources.cpp`).
 - Aparte regel in de code: een resource met `data/ai/vehicleweapons_caracara.meta` krijgt geen enkel `data_file` geladen (oude "assault vehicles"-packs die crashten).
 
 ---
