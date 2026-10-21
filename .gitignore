@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Uitvoer van de onderzoeksscripts
+research/output/
+
+# Voertuigbestanden van anderen nooit in git (zie doc/test_pack.md)
+*.yft
+*.ytd
+*.ydr
+*.ydd
+*.ycd
+*.ybn
+*.ypt
+*.ymf
+*.ymt
+*.rpf
+*.awc
+*.rel
+*.nametable
+*.fxap
+
+# Editor en OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
