@@ -3,7 +3,7 @@
 Hoe een voertuig-resource op schijf staat, welke varianten we tegenkwamen, en hoe FiveM resources en `stream/` vindt.
 De labels staan uitgelegd in [README.md](README.md#labels).
 
-**Gekozen (Mark, 21 okt 2026): één resource per voertuig** (B1 in [decisions.md](decisions.md)). Liveries gaan mee in die resource, met een duidelijke indeling. Packs worden gesplitst (B2). Nog open: de indeling binnen de resource en de naam (B24, voorstel in §3), en waar livery soort 4 heen gaat (B23, §2).
+**Gekozen (Mark, 21 okt 2026): één resource per voertuig** (B1 in [decisions.md](decisions.md)). Liveries gaan mee in die resource, met een duidelijke indeling. Packs worden gesplitst (B2). Advies voor de indeling binnen de resource: §3 (B24, Mark kiest). Nog open: waar livery soort 4 heen gaat (B23, §2) en hoe een voertuig zijn naam krijgt (B26).
 
 ---
 
@@ -35,7 +35,7 @@ Wat opvalt:
 - **De bestandsnaam van een meta mag vrij zijn.** Packs gebruiken `vehiclelayouts_bcat.meta`, `vehicleweapon_shermav.meta` en `weaponminigun.meta`; de repo zet de voertuignaam ervoor (`ferrari_f40_handling.meta`). Het `data_file`-type bepaalt wat het is. `community`, te testen (Q-S2).
 - **Globs in `data_file`** (`data/**/handling.meta`) gebruiken DriveV, onze pack en alle drie de downloads. Dat FiveM ze leest, staat in de broncode (`official`, [meta_files.md](meta_files.md) §10): `**` werkt, `*` en `?` alleen in de bestandsnaam, en hoofdlettergevoelig. In-game nog bevestigen (Q-S3). Let op: Python (`PurePosixPath.match`, gebruikt door VehicleTool) leest `**` anders dan FiveM.
 - **De converter zet zowel elke meta los als `'common/*.meta'` in `files`.** Dubbel, maar onschuldig. `tested` (gelezen).
-- **`stream/` met submappen** komt veel voor (VehicleTool, de drie downloads). FiveM streamt submappen mee en kijkt alleen naar de bestandsnaam (`official`, §5).
+- **`stream/` met submappen** komt veel voor (VehicleTool, de drie downloads). FiveM streamt submappen mee en kijkt alleen naar de bestandsnaam (`official`, §5; aan de serverkant `tested` op 21 okt).
 
 ---
 
@@ -54,11 +54,11 @@ Bronnen: GTAMods en Dawnstar (`community`, zie [sources.md](sources.md)), sameng
 
 Een extra `.ytd` naast het model (zoals `bell505a.ytd`) is meestal geen tweede voertuig maar een texture-laag via `txdRelationships` (zie [textures.md](textures.md#txdrelationships)).
 
-In rapporten gebruikten we de notatie `livery_group = <modelName>`. Bronbestanden of werkbestanden van liveries (zoals het sjabloon in `strman/[Template]/`) zijn niet nodig voor het spel en horen niet in `stream/` (`docs/meta_reference_and_load_order.md` §4.4); in het voorstel hieronder gaan ze naar `source/`.
+In rapporten gebruikten we de notatie `livery_group = <modelName>`. Bronbestanden of werkbestanden van liveries (zoals het sjabloon in `strman/[Template]/`) zijn niet nodig voor het spel en horen niet in `stream/` (`docs/meta_reference_and_load_order.md` §4.4); in het advies hieronder staan ze buiten `resources/` (§3).
 
 ---
 
-## 3. Eén resource per voertuig: de indeling (voorstel, B24)
+## 3. Eén resource per voertuig: de indeling (advies, B24)
 
 ### Wat B1 betekent
 
@@ -87,49 +87,67 @@ Forumgebruikers noemen het verschil klein; een officiële uitspraak van Cfx over
 
 Nog te meten op de dev-server: dezelfde voertuigen als één pack en als losse resources, met en zonder `cache/files/`. Meten: de tijd tussen `onResourceStarting` en `onResourceStart` op de server, haperingen in de console, de join-tijd in `CitizenFX.log` (met `developer 1` in F8), en `assetscount` in de client-console.
 
-### Voorstel
+### Advies: zo ziet een voertuig-resource eruit (B24)
+
+Mark wil "de beste en meest overzichtelijke oplossing" (21 okt). Het advies volgt vijf regels:
+
+1. **Eén plek per soort bestand.** Meta's, game-bestanden, geluid en uitleg hebben elk een eigen map. Wie de resource opent, ziet meteen wat er is.
+2. **Vaste namen.** Elk voertuig gebruikt dezelfde bestandsnamen. De tool, de templates en jij weten altijd waar iets staat.
+3. **Niets dubbel benoemen.** De naam van de resource zegt welk voertuig het is; de bestanden in `data/` krijgen geen voertuignaam ervoor.
+4. **Alleen wat de game nodig heeft, op de server.** Downloads, sjablonen en werkbestanden staan buiten `resources/`.
+5. **Wat FiveM zelf eist** (§5): de resource staat direct in een categorie met haken, `stream/` staat in de root, en elke bestandsnaam in `stream/` is uniek op de hele server.
 
 ```text
 resources/
-  [vehicles]/                        -- categorie: FiveM zoekt alleen in mappen met haken
-    [emergency]/                     -- mag: een categorie in een categorie (§5)
-    veh_kriegerty2/                  -- één voertuig; naam: zie hieronder
+  [vehicles]/                          -- categorie; `ensure [vehicles]` start ook de submappen
+    [shared]/                          -- wat meerdere voertuigen gebruiken
+      veh_shared_wheels_<naam>/        -- bijv. een wielen-pack
+      veh_shared_sounds_<naam>/        -- bijv. motorgeluiden die meerdere voertuigen delen
+    veh_kriegerty2/                    -- één voertuig
       fxmanifest.lua
+      README.md                        -- herkomst, maker, licentie, versie, wat wij veranderden
       data/
         vehicles.meta
         handling.meta
         carvariations.meta
-        carcols.meta                 -- alleen bij eigen kits, lichten of sirenes
-        vehiclelayouts.meta          -- alleen bij een eigen layout
-      stream/                        -- moet direct in de root staan (§5)
+        carcols.meta                   -- alleen bij eigen kits, lichten of sirenes
+        vehiclelayouts.meta            -- alleen bij een eigen layout
+      stream/
         kriegerty2.yft
         kriegerty2_hi.yft
-        kriegerty2.ytd               -- livery soort 1 zit hierin
+        kriegerty2.ytd                 -- livery soort 1 zit hierin
         kriegerty2+hi.ytd
-        mods/                        -- onderdelen uit de kit: kriegerty2_<deel>.yft
-        liveries/                    -- livery soort 2 (en 3): kriegerty2_livery<n>.yft
-      audio/                         -- alleen bij eigen motorgeluid
-        audioconfig/<naam>_game.dat151.rel, <naam>_sounds.dat54.rel
-        sfx/dlc_<naam>/<naam>.awc, <naam>_npc.awc
-      source/                        -- niet voor de game: livery-sjablonen, readme, licentie van de maker
+        mods/                          -- onderdelen uit de kit: kriegerty2_<deel>.yft
+        liveries/                      -- livery soort 2 en 3: kriegerty2_livery<n>.yft
+      audio/                           -- alleen bij eigen motorgeluid
+        audioconfig/                   -- <naam>_game.dat151.rel, <naam>_sounds.dat54.rel
+        sfx/dlc_<naam>/                -- <naam>.awc, <naam>_npc.awc
 ```
 
-Keuzes die Mark nog maakt (B24):
+Bronbestanden (de originele download, livery-sjablonen, `.psd`'s) staan buiten `resources/`, bijvoorbeeld in `F:\fivem_dev\vehicle_sources\kriegerty2\`. Alles in `resources/` gaat mee naar een server, en een sjabloon van 200 MB hoort daar niet.
 
-| Keuze | Voorstel | Alternatief | Waarom |
-|-------|----------|-------------|--------|
-| Naam van de resource | `veh_<modelName>` | `<modelName>`, of `<maker>_<modelName>` | Met `veh_` staan ze bij elkaar en botsen ze nooit met een script; de `modelName` zelf blijft zoals hij is |
-| Map voor de meta's | `data/` | `common/` (zoals de converter) | De drie downloads en `strman` gebruiken `data/`; voor FiveM maakt het niet uit (Q-S1) |
-| Eén bestand per type | ja, zonder voertuignaam ervoor | `kriegerty2_handling.meta` | De resource zegt al welk voertuig het is |
-| Submappen in `stream/` | `mods/` en `liveries/` | alles plat in `stream/` | Overzicht; voor FiveM maakt het niet uit (§5). De bestandsnamen moeten hoe dan ook uniek zijn op de hele server |
-| Livery soort 4 (B23) | in dezelfde resource: een `Item` per model in dezelfde meta's, de bestanden van elk model in dezelfde `stream/` | elk model een eigen resource | Ze delen meestal handling en textures |
-| Categorieën | `[vehicles]`, eventueel met submappen per klasse of herkomst | alles plat in `[vehicles]` | Honderden resources blijven zo overzichtelijk |
+| Keuze | Advies | Waarom | Hoe zeker |
+|-------|--------|--------|-----------|
+| Naam van de resource | `veh_<modelName>`, kleine letters, zonder spaties | Ze staan bij elkaar in txAdmin en de console, en botsen nooit met een script. Eén naam voor resource, model en `.ytd`. Een spatie maakt de server tot `%20` | spatie: `tested` (serverlog 21 okt: `Lore%20Friendly%20Rim%20Packs`) |
+| Categorie | `[vehicles]`, met submappen naar keuze (`[emergency]`, `[shared]`) | Honderden resources blijven overzichtelijk; `ensure [vehicles]` start ook wat in de submappen staat | `official` (broncode) |
+| Meta's | map `data/`, vaste namen, één bestand per type | De downloads gebruiken allemaal `data/`. Voor FiveM maakt de mapnaam niet uit, dus kiezen we de gangbare | `official`; in-game nog bevestigen (Q-S1) |
+| Manifest | elke `data_file` met een vast pad, en `files { 'data/*.meta' }` | Je ziet precies wat er geladen wordt. Geen valkuilen van globs: een `*` in een mapnaam vindt niets, hoofdletters tellen, en "elke meta onder elk type" kan niet. De tool schrijft het manifest uit wat er echt staat | `official` (broncode) |
+| `stream/` | het voertuig zelf plat in `stream/`, onderdelen in `mods/`, liveries in `liveries/` | Je ziet meteen wat het voertuig is en wat erbij hoort, en liveries hebben een vaste plek | submappen: `tested` aan de serverkant (de server meldde bestanden uit submappen van drie packs, met alleen de bestandsnaam); in-game nog bevestigen (Q-S4) |
+| Livery soort 4 (B23) | in dezelfde resource: elk model naast het basismodel in `stream/`, een `Item` per model in dezelfde meta's | Ze delen meestal handling en textures; voor de speler is het één voertuig | voorstel |
+| Geluid | `audio/audioconfig/` en `audio/sfx/dlc_<naam>/` | Alles van geluid bij elkaar. `dlc_<naam>` is de naam van de geluidsbank en moet blijven | `community` (de Lore-pack doet het zo) |
+| Gedeelde wielen en geluiden | een eigen resource in `[vehicles]/[shared]/` | Niet dubbel per voertuig; één plek om bij te werken | voorstel |
+| Scripts | geen | Een resource zonder scripts kost tijdens het spelen niets (Q-S10). De naam van het voertuig: zie B26 | `official` (broncode) |
+| `README.md` | klein, in de resource | Herkomst en licentie reizen mee met het voertuig | voorstel |
 
-Zo'n resource heeft een kort manifest; de tool maakt het uit wat er echt staat (prioriteit 2, B12):
+Het manifest van zo'n resource (de tool maakt het):
 
 ```lua
 fx_version 'cerulean'
 game 'gta5'
+
+author 'Maker (bron)'
+description 'Benefactor Krieger TY2'
+version '1.0.0'
 
 files {
     'data/*.meta',
@@ -140,6 +158,16 @@ data_file 'VEHICLE_METADATA_FILE'  'data/vehicles.meta'
 data_file 'CARCOLS_FILE'           'data/carcols.meta'
 data_file 'VEHICLE_VARIATION_FILE' 'data/carvariations.meta'
 ```
+
+**Wat ik afraad, en waarom:**
+
+- **Alles plat in `stream/`.** Werkt, maar bij een voertuig met 100+ onderdelen (zoals `batic`, 137 bestanden) zoek je je suf, en zie je niet welke bestanden liveries zijn.
+- **Per model een map in `stream/`** (`stream/kriegerty2/…`). Netjes voor families van modellen (soort 4), maar een extra laag voor bijna elk voertuig.
+- **Globs in het manifest** (`data/**/*.meta`). Korter, maar met de valkuilen hierboven; de Lore-pack laat zien hoe het misgaat.
+- **`common/` in plaats van `data/`.** Werkt net zo goed; `data/` is gewoon gangbaarder.
+- **De voertuignaam vóór de meta-namen** (`kriegerty2_handling.meta`). Dubbel: de resource zegt het al.
+
+**Nog in-game te bevestigen** (zodra er een client is): dat een voertuig in deze indeling spawnt, dat de onderdelen uit `mods/` en de liveries uit `liveries/` in het mod-menu staan, dat geluid uit `audio/` werkt, en de keuze voor de naam (B26). Dat wordt het eerste geval van het testpakket (`vt_00_baseline`).
 
 ### Wat we eerder overwogen
 
@@ -237,6 +265,8 @@ In `11john11_sapo_pack` zitten ook map-bestanden (`sc1_19_*.ytd/.ydr`) tussen de
 - De naam in de game is **alleen de bestandsnaam**, zonder map. Hij wordt opgeslagen in een veld van 128 tekens; een naam van 128 tekens of meer loopt daar over. Houd namen dus korter.
 - Een bestand `<naam>.stream_raw` naast een bestand telt niet als eigen bestand.
 - Elk bestand met een RSC-header krijgt een geheugencontrole: zie [textures.md](textures.md#de-melding-van-fivem).
+
+**Gezien in de serverlog** (`tested`, 21 okt 2026, na `refresh`): "Warning: FiveM-Civ-Car-Pack does not have a resource manifest (fxmanifest.lua)", net zo voor `FiveM-Lore-Friendly-Pack`, `cle53amg`, `VehicleEditor` en `Lore%20Friendly%20Rim%20Packs`: een spatie in een mapnaam wordt `%20` in de resourcenaam. De meldingen over te grote bestanden noemen bestanden uit submappen van `stream/` met alleen hun bestandsnaam ("Asset PLOKS_CARS/z32_prospats.yft uses 96.0 MiB …", uit `stream/[NISSAN]/z32/`). De zes wielen-packs en de 29 geluids-resources komen in de log niet voor: de server kijkt niet in hun bovenliggende map.
 
 ---
 

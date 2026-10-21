@@ -10,12 +10,12 @@ Bijgewerkt: 21 okt 2026.
 
 ## In het kort (21 okt 2026)
 
-- **Keuzes van Mark:** één resource per voertuig, met de liveries erbij; packs splitsen; één tool als het kan; volgorde structuur en templates → manifest → textures → handling-editor; het project gaat in de repo `FivemVehicleTool`; het in-game deel heet `dev_<naam>`. De naam zelf kiest Mark uit de lijst bij B17 ([decisions.md](decisions.md)).
-- **Mapstructuur:** een voorstel voor de indeling van één voertuig-resource staat in [folder_structure.md](folder_structure.md) §3 (B24). Uit de FiveM-broncode: de server kijkt alleen in mappen met haken, een resource in een andere resource laadt nooit, en `stream/` moet in de root van de resource staan maar mag submappen hebben.
-- **Textures:** FiveM meet per bestand, phys en virt apart, en meldt boven 16, 32 en 64 MiB; boven 48 MiB met de waarschuwing over streamingproblemen (broncode). De grootte op schijf zegt niets: `i8.ytd` is 1,5 MB op schijf en 128 MiB in het geheugen ([textures.md](textures.md)).
-- **Downloads in `[Vehicles]`:** 364 voertuigen, ruim 10 GB. Twee van de drie packs laden niet zoals ze er nu staan, 1.352 bestanden zitten boven de 16 MiB, en de packs botsen op namen en kit-id's ([test_data.md](test_data.md#downloads-in-vehicles-21-okt-2026)).
-- **Testpakket:** een voorstel om te bespreken: 31 kleine gevallen met elk één probleem ([test_pack.md](test_pack.md)).
-- **Meta's:** de officiële lijst van `data_file`-types is nagekeken; vijf types uit de downloads staan er niet in. De oude notities en templates bevatten fouten (o.a. `vehicleClass` als getal, `dlctext.meta` met namen, verzonnen root-elementen, overal kit-id 10000) ([meta_files.md](meta_files.md), [duplicates_and_conflicts.md](duplicates_and_conflicts.md)).
+- **Keuzes van Mark:** één resource per voertuig, met de liveries erbij; packs splitsen; één tool als het kan; volgorde structuur en templates → manifest → textures → handling-editor; het project staat in de repo `FivemVehicleTool`; de naam is voorlopig "vehicletools" (`dev_vehicletools`); we maken een eigen testpakket, ook met expres gemaakte fouten ([decisions.md](decisions.md)).
+- **Mapstructuur:** advies voor de indeling van één voertuig-resource in [folder_structure.md](folder_structure.md) §3 (B24, Mark kiest): `veh_<model>` met `data/`, `stream/` (met `mods/` en `liveries/`) en `audio/`, een vast manifest zonder globs, en bronbestanden buiten `resources/`. Uit de FiveM-broncode en de serverlog: de server kijkt alleen in mappen met haken, een resource in een resource laadt nooit, en `stream/` mag submappen hebben.
+- **Textures:** FiveM meet per bestand, phys en virt apart, en meldt boven 16, 32 en 64 MiB; boven 48 MiB met de waarschuwing over streamingproblemen. Bevestigd in de serverlog: het aantal meldingen klopt met onze scan ([textures.md](textures.md)).
+- **Downloads in `[Vehicles]`:** 364 voertuigen, ruim 10 GB. Sinds Mark `PLOKS_CARS` en `Lore_Friendly_Car_Pack` een map omhoog zette, draaien die mee; `strman` start niet (escrow zonder recht) ([test_data.md](test_data.md#downloads-in-vehicles-21-okt-2026)).
+- **Testpakket:** wat we nodig hebben per onderdeel van de tool, welke voertuigen dat worden, en wat we nog moeten zoeken (een boot, een vliegtuig, liveries in de `.ytd`, livery2) ([test_pack.md](test_pack.md)).
+- **Meta's:** de officiële lijst van `data_file`-types is nagekeken; vijf types uit de downloads staan er niet in. De oude notities en templates bevatten fouten ([meta_files.md](meta_files.md), [duplicates_and_conflicts.md](duplicates_and_conflicts.md)).
 - **Handling:** volgens de FiveM-broncode krijgt elk voertuig een eigen kopie van zijn handling, alleen op de client, in de eenheden van `handling.meta`. Sync naar andere spelers moet de tool zelf regelen ([handling.md](handling.md)).
 
 ## Waar staat wat
@@ -32,7 +32,7 @@ Bijgewerkt: 21 okt 2026.
 | [textures.md](textures.md) | Te grote textures ("oversized assets"), bestandsformaten, wat we al probeerden |
 | [audio.md](audio.md) | Eigen motorgeluid in een voertuig-resource |
 | [test_data.md](test_data.md) | De testvoertuigen en packs (ook de downloads in `[Vehicles]`), en welke test bij welk voorbeeld hoort |
-| [test_pack.md](test_pack.md) | **Voorstel testpakket** (om te bespreken): kleine gevallen met elk één probleem |
+| [test_pack.md](test_pack.md) | **Testpakket**: wat we nodig hebben, welke voertuigen, en hoe het is opgebouwd |
 | [open_questions.md](open_questions.md) | **Het onderzoek dat nog moet**: per vraag hoe we het uitzoeken (bron of test op de dev-server) |
 | [decisions.md](decisions.md) | Marks keuzes, wat vastligt door de standaard, wat Mark nog moet kiezen, en de namenlijst |
 | [sources.md](sources.md) | Alle links, één keer, per onderwerp |
