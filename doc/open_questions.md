@@ -17,12 +17,12 @@ Testen gaat volgens de werkwijze: eerst `status` van dolu_fivem_mcp (draait de s
 | Q-S1 | Maakt de mapnaam van de meta's uit (`common/`, `data/`, `meta/`, root)? | Welke structuren de tool moet accepteren | test: hetzelfde voertuig in drie vormen | middel | open |
 | Q-S2 | Mag een meta-bestand elke naam hebben (`krieger_handling.meta`)? | Naamgeving binnen een pack | test | laag | open |
 | Q-S3 | Werken globs in `data_file` (`data/**/handling.meta`), en laden ze alle gevonden bestanden? | Manifest-generator; de downloads gebruiken ze allemaal | bron (broncode) + test met twee voertuigen | middel | **deels** (21 okt, broncode): ja, de client globt elk pad zoals `files` (`**` werkt; `*` en `?` alleen in de bestandsnaam; hoofdlettergevoelig) en laadt elk gevonden bestand onder dat type; een pad zonder `*` dat niets vindt, gaat toch naar de game. Dat de glob alleen ziet wat de client gedownload heeft (dus `files {}`), is een `aanname`. Zie [meta_files.md](meta_files.md) §10. In-game bevestigen |
-| Q-S4 | Streamt FiveM ook submappen van `stream/` (`stream/krieger/krieger.yft`)? En een `stream/` die niet in de root staat (`<categorie>/stream/`, zoals de repo maakt)? | Indeling binnen de resource (B24) | bron + test | middel | **deels** (21 okt, broncode): submappen ja (recursief, naam = alleen de bestandsnaam); een `stream/` buiten de root nee. Zie [folder_structure.md](folder_structure.md) §5. In-game bevestigen |
+| Q-S4 | Streamt FiveM ook submappen van `stream/` (`stream/krieger/krieger.yft`)? En een `stream/` die niet in de root staat (`<categorie>/stream/`, zoals de repo maakt)? | Indeling binnen de resource (B24) | bron + test | middel | **deels** (21 okt, broncode en serverlog): submappen ja (recursief, naam = alleen de bestandsnaam; de server registreerde en controleerde bestanden uit submappen van drie packs); een `stream/` buiten de root nee. Zie [folder_structure.md](folder_structure.md) §5. In-game bevestigen (spawnen) |
 | Q-S5 | Breekt een kapotte meta (XML-fout, onbekend veld) alleen dat bestand, of de hele resource? Wat staat er in de console? | Eén bestand per voertuig of per pack (B2) | test | **hoog** | open |
-| Q-S6 | Twee bestanden met dezelfde stream-naam (in twee resources, of in submappen van één resource), dezelfde `modelName`, `handlingName` of kit-id: wie wint, en meldt FiveM het? | Botsingscontrole over de hele server | test | **hoog** | open. Voorbeelden uit de downloads: `spoiler_2.yft` bij drie auto's in `PLOKS_CARS`; kit-id 964 in drie packs ([test_data.md](test_data.md#downloads-in-vehicles-21-okt-2026)). Uit de broncode: binnen één resource houdt de server stil het eerste bestand met die naam; bij dubbele resourcenamen wint de eerste gevonden, met een melding |
+| Q-S6 | Twee bestanden met dezelfde stream-naam (in twee resources, of in submappen van één resource), dezelfde `modelName`, `handlingName` of kit-id: wie wint, en meldt FiveM het? | Botsingscontrole over de hele server | test | **hoog** | open; nu goed te testen: de Lore-pack en `lds-lorevehicles` draaien sinds 21 okt allebei, met 20 dezelfde voertuigen. Voorbeelden uit de downloads: `spoiler_2.yft` bij drie auto's in `PLOKS_CARS`; kit-id 964 in drie packs ([test_data.md](test_data.md#downloads-in-vehicles-21-okt-2026)). Uit de broncode: binnen één resource houdt de server stil het eerste bestand met die naam; bij dubbele resourcenamen wint de eerste gevonden, met een melding |
 | Q-S7 | Maakt de volgorde van `data_file` in het manifest uit (layouts vóór vehicles)? | De "team-standaard" uit `meta_reference` §1 | bron + test | middel | open |
 | Q-S8 | Welke meta's zijn echt nodig per type (auto, motor, heli, boot, vliegtuig, trailer)? Wat mis je zonder `carvariations`, `carcols`, `dlctext`, `shop_vehicle`? | Minimale set en templates; de bronnen spreken elkaar tegen | test: `alamo` steeds met één bestand minder | **hoog** | open |
-| Q-S9 | Werkt `__resource.lua` nog op onze FXServer (37389)? | Omzetten of alleen waarschuwen | test (`zaccflatlit`) | laag | **deels** (21 okt, broncode): de server leest hem nog; de melding "outdated manifest" komt alleen als de resource `client_script`s heeft |
+| Q-S9 | Werkt `__resource.lua` nog op onze FXServer (37389)? | Omzetten of alleen waarschuwen | test (`zaccflatlit`) | laag | **klaar** (21 okt, serverlog, `tested`): `zaccflatlit` met `__resource.lua` start ("Started resource zaccflatlit (3 warnings)": één oversized-bestand en twee ontbrekende bestanden). De melding "outdated manifest" komt alleen als de resource `client_script`s heeft (broncode). Of het voertuig in-game werkt, nog kijken |
 | Q-S10 | Wat is beter voor de server en de spelers: één grote voertuig-resource, of veel kleine (starttijd, joinen, downloaden, geheugen, herstarten)? | B1 en B2: Mark koos één resource per voertuig en wil weten wat dat kost | bron (broncode, Cfx-forum) + test: dezelfde voertuigen als 1 pack en als losse resources, starttijd en jointijd meten | **hoog** | **deels** (21 okt, broncode en forum): geen limiet op het aantal resources; tijdens het spelen geen verschil; losse resources kosten vooral bij de eerste join, en zijn goedkoper bij elke update. Zie [folder_structure.md](folder_structure.md) §3. Nog meten |
 | Q-S11 | Wat doet `_manifest.ymf` in `stream/`, en wat als twee voertuigen er een hebben (in een gedeelde pack botst hij altijd)? | Pack splitsen | bron + test (bron van `pigeonp`; zes in de Lore-pack) | laag | open |
 | Q-S12 | Leest FiveM `data_file 'TYPE' { 'a.meta', 'b.meta' }` met een tabel (zoals de repo schrijft)? | Manifest-generator | bron + test | laag | open |
@@ -52,18 +52,19 @@ Testen gaat volgens de werkwijze: eerst `status` van dolu_fivem_mcp (draait de s
 | Q-M17 | Welke klasse krijgt een voertuig met een `vehicleClass` die niet bestaat (`VC_SPORTS`, `VC_COMPACTS`)? | Ernst van M27 | test (`GetVehicleClass`) | laag | open |
 | Q-M18 | Wat ziet de speler als er geen tekst is voor `gameName` ("NULL", de modelnaam)? En werkt `AddTextEntryByHash` met de hash van `gameName` net zo goed als `AddTextEntry`? | Ernst van M16 | test | middel | open |
 | Q-M19 | Wat gebeurt er als een add-on een kit met een vanilla-naam opnieuw definieert (`0_default_modkit`, `268_hermes_modkit`)? Welke kit-id's gebruikt de game zelf in build 3889? | Kit-controle (M21, X4) | test + dump | middel | open |
+| Q-M20 | Kan een voertuig zijn naam krijgen zonder script, bijvoorbeeld met een GTA-tekstbestand (`.gxt2`) in `stream/` of via `TEXTFILE_METAFILE`? En werkt `GetResourceMetadata` op de client voor eigen sleutels als `vehicle_label`? | Keuze B26 (hoe een voertuig zijn naam krijgt) | bron + test | middel | open |
 
 ## T. Textures en assets
 
 | # | Vraag | Waarom | Aanpak | Prio | Status |
 |---|-------|--------|--------|------|--------|
-| Q-T1 | Wat is de exacte grens voor "oversized", wat meet FiveM (phys, virt, per bestand?), en wat is de tekst van de melding? | Kern van de texture-check | bron (FiveM-broncode) + serverlog | **hoog** | **klaar** (21 okt, `official`, broncode): per bestand, phys en virt apart, meldingen boven 16, 32 en 64 MiB, met de zin over streamingproblemen boven 48 MiB. Zie [textures.md](textures.md#de-melding-van-fivem). Nog in de serverlog terugzien |
+| Q-T1 | Wat is de exacte grens voor "oversized", wat meet FiveM (phys, virt, per bestand?), en wat is de tekst van de melding? | Kern van de texture-check | bron (FiveM-broncode) + serverlog | **hoog** | **klaar** (21 okt, broncode en serverlog, `tested`): per bestand, phys en virt apart, meldingen boven 16, 32 en 64 MiB, met de zin over streamingproblemen boven 48 MiB. Het aantal meldingen per pack klopt met onze scan. Zie [textures.md](textures.md#de-melding-van-fivem) |
 | Q-T2 | Wat gebeurt er in-game bij een te groot bestand (laadt niet, laat, crash)? | Hoe streng de tool moet zijn | test | middel | open |
 | Q-T3 | Zijn er ook grenzen per texture (resolutie, aantal per `.ytd`, macht van 2)? | Claims uit `plan.md` | bron + test | laag | open |
 | Q-T4 | Kunnen we een `.ytd` zelf herschrijven (mip-levels weglaten, textures vervangen)? Via een eigen parser, CodeWalker als bibliotheek, of CodeWalker.API? | Of de tool kan **oplossen** of alleen **melden** (B19) | bron + prototype | **hoog** | open |
 | Q-T5 | Wanneer laadt de game `<txd>.ytd` en wanneer `<txd>+hi.ytd`; tellen ze samen? | Rapportage per voertuig | bron + test | laag | open |
 | Q-T6 | Vervangt een vanilla-naam in `stream/` (`vehicles_stanier_interior.ytd`) die texture voor alle voertuigen? | Waarschuwing in de check | test | laag | open |
-| Q-T7 | Escrow: welke bestanden zijn versleuteld? Kan de tool altijd de header lezen? | Escrow herkennen en alleen melden | meten over meer escrow-packs | laag | open. In de downloads alleen `strman`: de twee `.yft`'s versleuteld, de `.ytd` niet |
+| Q-T7 | Escrow: welke bestanden zijn versleuteld? Kan de tool altijd de header lezen? | Escrow herkennen en alleen melden | meten over meer escrow-packs | laag | **deels** (21 okt, serverlog): zonder recht op het asset start de resource niet ("You lack the required entitlement to use strman", daarna "Couldn't start resource strman."). In de downloads alleen `strman`: de twee `.yft`'s versleuteld, de `.ytd` niet |
 | Q-T8 | Een te grote `.ytd` splitsen in twee met `txdRelationships`: verdwijnt de melding en laadt alles? | Alternatieve oplossing zonder kwaliteitsverlies | test | middel | open |
 
 ## H. Handling en de in-game editor
@@ -118,16 +119,16 @@ Dingen die niet alleen voor deze tool gelden. Na een test horen ze in de kennisb
 
 Volgens Marks volgorde (B12): eerst structuur en templates, dan manifest, dan textures, dan de handling-editor.
 
-1. **Bronnen eerst** (geen dev-server nodig): Q-S10 (bezig), Q-M12, Q-A5, Q-H11. Klaar op 21 okt: Q-T1, Q-M1, Q-M10, en deels Q-S3, Q-S4, Q-S9.
-2. **Testpakket** samenstellen, als Mark dat wil (B25, [test_pack.md](test_pack.md)).
-3. **Structuur- en meta-tests** (dev-server): Q-S5, Q-S6, Q-S8 (minimale set), Q-S13, Q-M15, Q-M16, Q-M9, Q-M14, Q-M18; daarna Q-M2, Q-M3, Q-M4, Q-M19.
-4. **Manifest-tests**: Q-S3 en Q-S4 in-game bevestigen, Q-S7, Q-S12; architectuur Q-A1 en Q-A2 (één tool of twee, B3).
-5. **Textures**: serverlog bij Q-T1, dan Q-T2, het prototype voor Q-T4 en Q-T8.
+1. **Bronnen** (geen dev-server nodig): Q-M12, Q-A5, Q-H11, Q-M20. Klaar op 21 okt: Q-T1, Q-M1, Q-M10, Q-S9; deels Q-S3, Q-S4, Q-S10, Q-T7.
+2. **Indeling kiezen** (B24, B26) en het **testpakket** opbouwen ([test_pack.md](test_pack.md)), te beginnen met `vt_00_baseline` in de gekozen indeling.
+3. **Structuur- en meta-tests** (dev-server, met client): Q-S4 in-game, Q-S5, Q-S6 (kan nu al: Lore en lds draaien allebei), Q-S8 (minimale set), Q-S13, Q-M15, Q-M16, Q-M9, Q-M14, Q-M18; daarna Q-M2, Q-M3, Q-M4, Q-M19.
+4. **Manifest-tests**: Q-S3 in-game, Q-S7, Q-S12; architectuur Q-A1 en Q-A2 (één tool of twee, B3).
+5. **Textures**: Q-T2, het prototype voor Q-T4 en Q-T8.
 6. **Handling** (met speler): Q-H1, Q-H2, Q-H3, Q-H13, daarna de dataset voor Q-H4.
 
 ## Takenlijst voor Mark (voor de tests)
 
-- [ ] Zeggen of we het testpakket maken, en hoe (B25, [test_pack.md](test_pack.md)).
-- [ ] Beslissen waar de ruwe downloads blijven. Nu start `ensure [Vehicles]` alles wat FiveM erin vindt: `lds-lorevehicles` (98 voertuigen, 1,7 GB), `kriegerty2`, `strman` en `zaccflatlit`. De twee grote packs en `cle53amg` laden niet ([test_data.md](test_data.md#downloads-in-vehicles-21-okt-2026)).
-- [ ] Voor de handling-tests: in-game zijn, met één client; voor Q-H2 en Q-H12 met twee clients (let op het geheugen).
-- [ ] Ontbrekende testdata zoeken: een boot, een vliegtuig en een voertuig met livery2 (zie [test_data.md](test_data.md)). Als de map `[vehicles_pack]` van de oude server er nog is: die tien resources zijn ook goede testdata.
+- [ ] In-game komen (één client) voor de tests die een speler nodig hebben; voor Q-H2 en Q-H12 later twee clients.
+- [ ] De indeling kiezen (B24) en hoe een voertuig zijn naam krijgt (B26), zie [folder_structure.md](folder_structure.md) §3.
+- [ ] Ontbrekende testvoertuigen zoeken: een boot, een vliegtuig, een voertuig met liveries in de `.ytd` (soort 1) en een met livery2 (zie [test_pack.md](test_pack.md)). Als de map `[vehicles_pack]` van de oude server er nog is: die tien resources zijn ook goede testdata.
+- [ ] Zodra het testpakket draait: `ensure [Vehicles]` uit `server.cfg` halen (B25).

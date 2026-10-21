@@ -17,12 +17,13 @@ Bijgewerkt: 21 okt 2026.
 | B2 | **Packs splitsen** naar losse resources | Wat beter is voor de server (één grote resource of veel kleine): eerste antwoord uit de FiveM-broncode in [folder_structure.md](folder_structure.md) §3. Kort: geen limiet op het aantal resources, tijdens het spelen geen verschil; losse resources kosten vooral bij de eerste join en zijn goedkoper bij elke update | Q-S10 (meten) |
 | B3 | **Eén tool als het kan, anders twee** | Het plan van maart koos twee tools omdat FiveM geen bestanden zou kunnen lezen of schrijven. Server-side kan dat binnen de sandbox wel. Of scannen en controleren in één FiveM-resource kan, beslissen Q-A1 en Q-A2 | Q-A1, Q-A2, Q-A4 |
 | B12 | **Volgorde:** 1 structuur en templates, 2 manifest, 3 textures, 4 handling-editor | Het onderzoek en het testpakket volgen deze volgorde ([open_questions.md](open_questions.md), [test_pack.md](test_pack.md)) | – |
-| B16 | **Het project komt in de repo `mjvanhaastert/FivemVehicleTool`** | De oude code van die repo gaat daar naar `archive/`. De oude lokale repo (`TrueRP/VehicleEditor`) staat met de rest van het oude werk in `archive/` van de projectmap | de naam (B17) |
-| B17 | **Het in-game deel heet `dev_<naam>`**: een script voor anderen (standaard V6), geen `devkit_` | Mark wil een nieuwe naam voor het project. De lijst staat hieronder | welke naam |
+| B16 | **Het project komt in de repo `mjvanhaastert/FivemVehicleTool`** | De oude code van die repo staat daar in `archive/` (PR #1, samengevoegd op 21 okt). De oude lokale repo (`TrueRP/VehicleEditor`) staat met de rest van het oude werk in `archive/` van de projectmap | – |
+| B17 | **Naam, voorlopig: "vehicletools".** Het in-game deel heet dus `dev_vehicletools` (een script voor anderen, standaard V6) | Mark (21 okt): "laten we het maar houden op vehicletools voor nu". De andere namen hieronder blijven bewaard voor als hij later toch iets anders wil | – |
+| B25 | **We maken een eigen testpakket**, ook met gevallen waarin we expres een fout zetten | Het pakket komt in plaats van de downloads: `ensure [Vehicles]` gaat weg zodra het er is. Welke voertuigen we nodig hebben: [test_pack.md](test_pack.md) | welke voertuigen we nog zoeken |
 
-### Namen om uit te kiezen (B17)
+### Andere namen (B17)
 
-De naam wordt ook de naam van de repo (GitHub stuurt de oude URL door na een hernoeming) en van de resource: `dev_<naam>`.
+Mark koos voorlopig "vehicletools". Deze lijst bleef over; de naam wordt ook de naam van de repo (GitHub stuurt de oude URL door na een hernoeming) en van de resource: `dev_<naam>`.
 
 | Naam | Resource | Idee |
 |------|----------|------|
@@ -35,7 +36,7 @@ De naam wordt ook de naam van de repo (GitHub stuurt de oude URL door na een her
 | **Fleetsmith** | `dev_fleetsmith` | Een smid voor de hele vloot: werkt over alle voertuigen van de server |
 | **Homolog** | `dev_homolog` | Van homologatie: de keuring of een auto aan de regels voldoet |
 
-Liever niet: "VehicleTool(s)" (bestaat al als script op het Cfx-forum en is te algemeen), "Dyno" (een gewone functie in tuning-scripts) en "MOT" of "APK" (er bestaat al een MOT-keuringsscript; "apk" leest buiten Nederland als Android). Kort gezocht op 21 okt 2026; voor de andere namen vonden we geen FiveM-project met dezelfde naam, maar dat is geen garantie.
+Waarom de lijst er was: "Vehicle Tools" bestaat al als script op het Cfx-forum en is algemeen. Als werknaam is dat geen probleem; bij publiceren nog eens kijken. Ook liever niet: "Dyno" (een gewone functie in tuning-scripts) en "MOT" of "APK" (er bestaat al een MOT-keuringsscript; "apk" leest buiten Nederland als Android). Kort gezocht op 21 okt 2026; voor de andere namen vonden we geen FiveM-project met dezelfde naam, maar dat is geen garantie.
 
 ---
 
@@ -75,8 +76,8 @@ Liever niet: "VehicleTool(s)" (bestaat al als script op het Cfx-forum en is te a
 | # | Vraag | Voorstel | Waarom nu |
 |---|-------|----------|-----------|
 | B23 | Livery soort 4 (een apart model per uiterlijk, zoals `lsfd` … `lsfd5`): in de resource van het basisvoertuig, of elk een eigen resource? | In de resource van het basisvoertuig: ze delen meestal handling en textures, en voor de speler is het één voertuig | Volgt uit B1; nodig voor de templates |
-| B24 | Indeling binnen een voertuig-resource: naam van de resource, map voor de meta's (`data/` of `common/`), submappen in `stream/` | Zie [folder_structure.md](folder_structure.md) §3 | Prioriteit 1 (B12): zonder indeling geen templates |
-| B25 | Testpakket: maken we een vaste set testvoertuigen, met één probleem per voertuig? En hoe (zie het voorstel)? | Ja; zie [test_pack.md](test_pack.md) | Mark wil dit eerst bespreken |
+| B24 | Indeling binnen een voertuig-resource: naam van de resource, map voor de meta's, submappen in `stream/`, geluid, gedeelde wielen | Advies in [folder_structure.md](folder_structure.md) §3: `veh_<modelName>` met `data/`, `stream/` (met `mods/` en `liveries/`) en `audio/`, een vast manifest zonder globs, bronbestanden buiten `resources/` | Prioriteit 1 (B12): zonder indeling geen templates. Mark wil "de beste en meest overzichtelijke oplossing" |
+| B26 | Hoe krijgt een voertuig zijn naam in de game? (a) Een klein `names.lua` per voertuig met `AddTextEntry`; (b) de naam als metadata in het manifest (`vehicle_label 'Benefactor Krieger TY2'`), en `dev_vehicletools` zet alle namen; (c) een GTA-tekstbestand (`.gxt2`), als FiveM dat laadt (Q-M20) | (b): de voertuig-resources blijven zonder scripts (die kosten niets, Q-S10), en namen aanpassen kan zonder de resource te openen. Nadeel: zonder de tool geen namen; de tool kan dan een `names.lua` meegeven bij het delen van een voertuig | Hoort bij de indeling (B24) en de templates; in de downloads heeft 152 van de 362 gelezen voertuigen geen naam |
 | B22 | Code uit `vehiclehandler` (GPL-3.0, ox_lib) niet overnemen; alleen ideeën | Zo doen | Licentie en standaard V2; zie [inventory.md](inventory.md) |
 | B18 | Handling-grenzen: hoe bepalen we "normaal"? Per klasse uit vanilla-data (voorstel), of uit de Eddlm-ranges, of uit onze class-baselines? | Vanilla per klasse | Marks wens: grenzen met een schakelaar om ze uit te zetten. Zie [handling.md](handling.md) en Q-H4 |
 | B19 | Mag de tool textures zelf verkleinen (en dus `.ytd`'s herschrijven), of alleen melden en adviseren? | Eerst melden; herschrijven na Q-T4 | Hangt af van Q-T4; het grootste technische risico |

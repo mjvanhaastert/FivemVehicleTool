@@ -71,17 +71,19 @@ VehicleTool controleerde in maart 2026 tien resources die niet in deze map staan
 
 Mark zette op 20 okt downloads in `resources/[Vehicles]` van de dev-server. Gescand op 21 okt met `research/scripts/scan_vehicles.py` uit de repo: alleen lezen (manifest, meta's, `.lua`, en de eerste 16 bytes van elk resource-bestand). Alles hieronder is `tested` in de zin van "gelezen"; niets is in-game getest. De server was tijdens de scan nog aan het opstarten.
 
-| Map | Wat | Voertuigen | Grootte | Laadt FiveM het? |
+| Map | Wat | Voertuigen | Grootte | Laadt FiveM het? (zoals gedownload) |
 |-----|-----|-----------:|--------:|------------------|
-| `FiveM-Civ-Car-Pack/` | Pack van PLOKMJNB (GitHub): `PLOKS_CARS`, één resource met echte merken, plus `VehicleSpawner` (C#-menu met drie `.dll`'s) en voorbeeldbestanden voor vMenu en een framework | 191 | 5,3 GB | **nee** |
-| `FiveM-Lore-Friendly-Pack/` | Pack van SpiritsCreations (GitHub): `Lore_Friendly_Car_Pack` v1.2 met 41 motorgeluiden, en zes wielen-packs | 72 | 2,9 GB | **nee** |
+| `FiveM-Civ-Car-Pack/` | Pack van PLOKMJNB (GitHub): `PLOKS_CARS`, één resource met echte merken, plus `VehicleSpawner` (C#-menu met drie `.dll`'s) en voorbeeldbestanden voor vMenu en een framework | 191 | 5,3 GB | **nee**; sinds 21 okt staat `PLOKS_CARS` direct in `[Vehicles]` en draait hij |
+| `FiveM-Lore-Friendly-Pack/` | Pack van SpiritsCreations (GitHub): `Lore_Friendly_Car_Pack` v1.2 met 41 motorgeluiden, en zes wielen-packs | 72 | 2,9 GB | **nee**; sinds 21 okt draait `Lore_Friendly_Car_Pack` (één map omhoog gezet); de zes wielen-packs nog steeds niet |
 | `lds-lorevehicles/` | Lore-friendly pack: één resource, met 29 geluids-resources in `[lorevehicles-sounds]/` | 98 | 1,7 GB | ja, maar de 29 geluids-resources niet |
-| `kriegerty2/`, `strman/`, `zaccflatlit/` | kopieën uit `TestVehicleFolder` | 3 | 73 MB | ja |
+| `kriegerty2/`, `strman/`, `zaccflatlit/` | kopieën uit `TestVehicleFolder` | 3 | 73 MB | ja, behalve `strman`: escrow zonder recht ("You lack the required entitlement") |
 | `cle53amg/` | kopie uit `TestVehicleFolder`: alleen `dlc.rpf` | – | 307 MB | nee |
 
 Samen: 364 voertuigen, 16.431 bestanden, ruim 10 GB, 13.856 bestanden met een RSC7-header. Van twee voertuigen (`bolide` en `2020ss` in `PLOKS_CARS`) is de `vehicles.meta` kapot; de andere 362 konden we lezen: 356 auto's, 4 motoren, 1 amfibie-auto en 1 trailer. Ook acht `carcols.meta` waren niet te lezen, dus de aantallen voor voertuigen en kits hieronder zijn minimums.
 
-**Waarom twee packs en `cle53amg` niet laden:** FiveM kijkt alleen in mappen met haken. `FiveM-Civ-Car-Pack` heeft geen haken en geen manifest, dus de server ziet hem als één resource zonder manifest en kijkt er niet in. Hetzelfde geldt voor de geluids-resources in `lds-lorevehicles`: een resource in een resource laadt nooit (`official`, broncode; zie [folder_structure.md](folder_structure.md) §5). `ensure [Vehicles]` start dus alleen `kriegerty2`, `lds-lorevehicles`, `strman` en `zaccflatlit`.
+**Waarom twee packs en `cle53amg` niet laden:** FiveM kijkt alleen in mappen met haken. `FiveM-Civ-Car-Pack` heeft geen haken en geen manifest, dus de server ziet hem als één resource zonder manifest en kijkt er niet in. Hetzelfde geldt voor de geluids-resources in `lds-lorevehicles`: een resource in een resource laadt nooit (`official`, broncode; zie [folder_structure.md](folder_structure.md) §5).
+
+**Sinds 21 okt (serverlog, `tested`):** Mark zette `PLOKS_CARS` en `Lore_Friendly_Car_Pack` een map omhoog, direct in `[Vehicles]`. De server start nu `PLOKS_CARS` (483 warnings), `Lore_Friendly_Car_Pack` (402), `lds-lorevehicles` (466), `zaccflatlit` (3) en `kriegerty2`. Na `refresh` meldt hij "does not have a resource manifest" voor `FiveM-Civ-Car-Pack`, `FiveM-Lore-Friendly-Pack`, `Lore%20Friendly%20Rim%20Packs`, `cle53amg` en `VehicleEditor`. Dat betekent ook: de Lore-pack en `lds-lorevehicles` draaien nu tegelijk, met 20 dezelfde voertuigen.
 
 ### Wat de scan vond
 
@@ -168,6 +170,7 @@ Voor elk voertuig dat we testen op de dev-server:
 ## Wat ontbreekt
 
 - Een **boot** en een **vliegtuig** als echte resource (het vliegtuig in VehicleOptimizer is alleen een template).
+- Een voertuig met **liveries in de `.ytd`** (soort 1, met `<liveries>` in `carvariations`): ook in `archive/research/` en de downloads heeft geen enkel voertuig dat (gescand op 21 okt).
 - Een voertuig met **livery2** (dak-livery).
 - Een **vanilla** `handling.meta` als ijkpunt voor "normale" waarden (DriveV is aangepast). Zie Q-H4.
 

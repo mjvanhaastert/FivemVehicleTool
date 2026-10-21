@@ -80,7 +80,25 @@ Mark zag de melding bij `strman`. Hoe hij werkt, staat in de FiveM-broncode (`of
 - De tekst is: `Asset <resource>/<bestand> uses <X.X> MiB of <physical|virtual> memory.` Een bestand dat op beide boven de grens zit, geeft twee regels.
 - Het gevolg (`community`): textures of modellen laden niet of laat ("streaming issues"), vooral bij spelers met weinig videogeheugen (Q-T2).
 
-Op het Cfx-forum gaan de draden [Oversized assets can and WILL lead to streaming issues](https://forum.cfx.re/t/oversized-assets-can-and-will-lead-to-streaming-issues/1761205) en [Virtual/physical memory for assets](https://forum.cfx.re/t/virtual-physical-memory-for-assets/1689728/4) hierover (`community`, nog niet gelezen). Nog te doen: de melding in de serverlog van de dev-server terugzien.
+**Gezien in de serverlog van de dev-server** (`tested`, 21 okt 2026):
+
+```text
+^1Asset PLOKS_CARS/z32_prospats.yft uses 96.0 MiB of physical memory. Oversized assets can and WILL lead to streaming issues (such as models not loading/rendering).^7
+^3Asset PLOKS_CARS/z32_vertex3.yft uses 64.0 MiB of physical memory. Oversized assets can and WILL lead to streaming issues (such as models not loading/rendering).^7
+Started resource lds-lorevehicles (466 warnings)
+```
+
+Precies 64,0 MiB krijgt geel, niet rood: de grens is echt "groter dan". Het aantal meldingen per resource klopt met wat onze scan voorspelt, als je elke bestandsnaam één keer telt (de server houdt bij dubbele namen in één resource alleen de eerste):
+
+| Resource | Te groot volgens de scan | "warnings" in de log | Verschil |
+|----------|-------------------------:|---------------------:|----------|
+| `lds-lorevehicles` | 466 | 466 | – |
+| `PLOKS_CARS` | 481 | 483 | 2× "could not find file" (`data/**/*.dat`, `data/**/*.ytyp`) |
+| `zaccflatlit` | 1 | 3 | 2× "could not find file" (`carcols.meta`, `vehiclelayouts.meta`) |
+| `Lore_Friendly_Car_Pack` | 398 | 402 | 4 die niet meer in de log stonden (te vroeg); vermoedelijk ontbrekende bestanden uit `files` en `versioncheck.lua` |
+| `kriegerty2` | 0 | 0 | – |
+
+Op het Cfx-forum gaan de draden [Oversized assets can and WILL lead to streaming issues](https://forum.cfx.re/t/oversized-assets-can-and-will-lead-to-streaming-issues/1761205) en [Virtual/physical memory for assets](https://forum.cfx.re/t/virtual-physical-memory-for-assets/1689728/4) hierover (`community`, nog niet gelezen).
 
 ---
 
