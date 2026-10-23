@@ -4,7 +4,7 @@ Alles wat we weten over het plan voor een all-in-one voertuigtool voor FiveM: ee
 
 **Fase: onderzoek.** De tool zelf bouwen we nog niet; wel het testpakket waarmee we de vragen in de game beantwoorden. Deze map verzamelt wat er al in de projectmap stond (oude notities, code, testdata), haalt dubbelingen weg, en zet de open vragen en de uitkomsten op een rij. Het oude werk zelf staat sinds 21 okt in `archive/` van de projectmap.
 
-Bijgewerkt: 21 okt 2026.
+Bijgewerkt: 23 okt 2026.
 
 ---
 
@@ -17,6 +17,7 @@ Bijgewerkt: 21 okt 2026.
 - **Downloads in `[Vehicles]`:** 364 voertuigen, ruim 10 GB. Sinds Mark `PLOKS_CARS` en `Lore_Friendly_Car_Pack` een map omhoog zette, draaien die mee; `strman` start niet (escrow zonder recht) ([test_data.md](test_data.md#downloads-in-vehicles-21-okt-2026)).
 - **Meta's:** de officiële lijst van `data_file`-types is nagekeken; vijf types uit de downloads staan er niet in. De oude notities en templates bevatten fouten ([meta_files.md](meta_files.md), [duplicates_and_conflicts.md](duplicates_and_conflicts.md)).
 - **Handling:** volgens de FiveM-broncode krijgt elk voertuig een eigen kopie van zijn handling, alleen op de client, in de eenheden van `handling.meta`. Sync naar andere spelers moet de tool zelf regelen ([handling.md](handling.md)).
+- **Bestaande editors (23 okt, Q-H11):** BabiczHandlingEditor is AGPL-3.0, dus daar nemen we geen code uit over; carmineos en vehicleDebug zijn MIT. carmineos synct al per voertuig, met decorators die elke client toepast: hetzelfde idee als onze state bag. vehicleDebug roept na elke wijziging `ModifyVehicleTopSpeed` aan ([handling.md](handling.md#bestaande-editors-om-van-te-leren)).
 
 ## Waar staat wat
 

@@ -73,20 +73,20 @@ Testen gaat volgens de werkwijze: eerst `status` van dolu_fivem_mcp (draait de s
 | # | Vraag | Waarom | Aanpak | Prio | Status |
 |---|-------|--------|--------|------|--------|
 | Q-H1 | Werkt `SetVehicleHandlingFloat` op één voertuig, of op alle voertuigen met dezelfde handling op die client? | Opzet van de editor | test (twee voertuigen van hetzelfde model) | **hoog** | **deels**: de broncode geeft elk voertuig een eigen kopie ([handling.md](handling.md)); in-game bevestigen |
-| Q-H2 | Zien andere spelers de aangepaste handling? Moet de server de waarden naar iedereen sturen (state bag)? | Sync in de editor | test met twee clients | **hoog** | **deels**: de natives zijn alleen client-side en niet gesynchroniseerd (broncode); de state-bag-aanpak testen |
-| Q-H3 | Welke velden werken direct, en welke pas na opnieuw instappen of spawnen? | Live aanpassen vs. respawn | test per veld | **hoog** | **deels**: `fInitialDriveForce` en `fInitialDriveMaxFlatVel` pas na `ModifyVehicleTopSpeed` (native-docs); de rest testen |
+| Q-H2 | Zien andere spelers de aangepaste handling? Moet de server de waarden naar iedereen sturen (state bag)? | Sync in de editor | test met twee clients | **hoog** | **deels**: de natives zijn alleen client-side en niet gesynchroniseerd (broncode); carmineos synct met decorators per veld, en elke client past ze toe binnen 150 m (`community`, [handling.md](handling.md#bestaande-editors-om-van-te-leren)); de state-bag-aanpak testen |
+| Q-H3 | Welke velden werken direct, en welke pas na opnieuw instappen of spawnen? | Live aanpassen vs. respawn | test per veld | **hoog** | **deels**: `fInitialDriveForce` en `fInitialDriveMaxFlatVel` pas na `ModifyVehicleTopSpeed` (native-docs; vehicleDebug roept het na elke wijziging aan); volgens carmineos werken sommige velden pas na een stukje rijden of schade (`community`); de rest testen |
 | Q-H4 | Wat zijn de "normale" waarden per klasse? | Grenzen in de editor (B18) | meten: alle vanilla-voertuigen spawnen en uitlezen, dataset in `data/` van de kennisbasis | **hoog** | open |
-| Q-H5 | Harde grenzen per veld: waar breekt de physics of crasht het? Kloppen de Eddlm-ranges? | De "ontgrendelde" modus | bron + test | middel | **deels**: 0 deelt door nul bij vier velden (broncode) |
+| Q-H5 | Harde grenzen per veld: waar breekt de physics of crasht het? Kloppen de Eddlm-ranges? | De "ontgrendelde" modus | bron + test | middel | **deels**: 0 deelt door nul bij vier velden (broncode); de bereiken van carmineos als tweede mening (`community`, [handling.md](handling.md#bestaande-editors-om-van-te-leren)) |
 | Q-H6 | Kunnen we `SubHandlingData` (`CCarHandlingData`, `CBikeHandlingData`, `CFlyingHandlingData`, `CBoatHandlingData`) live lezen en schrijven? | Editor voor niet-auto's | test | middel | **deels**: de broncode zoekt ook in de sub-klassen, de docs zeggen van niet; testen |
 | Q-H7 | Kunnen we vlaggen (`strModelFlags`, `strHandlingFlags`, `strDamageFlags`, `strAdvancedFlags`) live aanpassen? Welke werken alleen globaal? | Volledige editor | test | laag | **deels**: als getal te lezen en te schrijven (broncode); sommige alleen globaal (native-docs) |
 | Q-H8 | Hoe schrijven we een `handling.meta` precies in het formaat van de game (getallen, vectoren, volgorde)? | Export | bron (vanilla-bestand) | middel | open |
 | Q-H9 | Topsnelheid: hoe verhouden `fInitialDriveMaxFlatVel`, `ModifyVehicleTopSpeed` en de echte topsnelheid zich? Welke eenheid? (de bronnen zeggen 0–200 én 150–340) | Grenzen en metingen | bron + test (meten op een rechte weg) | middel | **deels**: meta-eenheid, intern ÷ 3,6 (broncode); de echte topsnelheid nog meten |
 | Q-H10 | Werkt `ForceUseAudioGameObject` in FiveM om motorgeluid te wisselen? | Extra in de editor | test | laag | open |
-| Q-H11 | Wat doen de bestaande editors (carmineos, Babicz, vehicleDebug) goed of fout? | Leren zonder het wiel opnieuw uit te vinden | bron (code lezen, licentie checken) | middel | open |
+| Q-H11 | Wat doen de bestaande editors (carmineos, Babicz, vehicleDebug) goed of fout? | Leren zonder het wiel opnieuw uit te vinden | bron (code lezen, licentie checken) | middel | **klaar** (23 okt): Babicz is AGPL-3.0 (geen code overnemen), carmineos en vehicleDebug zijn MIT; bevindingen in [handling.md](handling.md#bestaande-editors-om-van-te-leren) |
 | Q-H12 | Blijft een aanpassing staan als het voertuig van netwerk-eigenaar wisselt? | Sync | test met twee clients | middel | open |
 | Q-H13 | Geven de natives de waarde uit de meta terug, of een omgerekende waarde (m/s, radialen, verdeling)? | Export naar `handling.meta` klopt anders niet | test: waarde in meta vs. `GetVehicleHandlingFloat` | **hoog** | **deels**: meta-eenheden, FiveM rekent zelf om (broncode); behalve `fDriveBiasFront` onder 0,1 of boven 0,9. In-game bevestigen |
-| Q-H14 | Kapt FiveM `nInitialDriveGears` af op 7 (add-ons gebruiken tot 10)? | Grenzen | test: 10 zetten en teruglezen | laag | open |
-| Q-H15 | Welke veldnamen bestaan echt (bijv. `fPopUpLightRotation`, `fPetrolConsumptionRate`, `fWeaponDamageScaledToVehHealthMult`)? | Veldenlijst van de editor | test: alle namen langslopen en op "No such field" letten | middel | open |
+| Q-H14 | Kapt FiveM `nInitialDriveGears` af op 7 (add-ons gebruiken tot 10)? | Grenzen | test: 10 zetten en teruglezen | laag | open; carmineos zette het veld in 2019 uit om een fout type in de native (`community`) |
+| Q-H15 | Welke veldnamen bestaan echt (bijv. `fPopUpLightRotation`, `fPetrolConsumptionRate`, `fWeaponDamageScaledToVehHealthMult`)? | Veldenlijst van de editor | test: alle namen langslopen en op "No such field" letten | middel | open; carmineos heeft `fPopUpLightRotation` en `fWeaponDamageScaledToVehHealthMult` (plus `fRocketBoostCapacity`, `fBoostMaxSpeed`) met een bereik, `fPetrolConsumptionRate` niet (`community`) |
 
 ## A. Architectuur en tooling
 
@@ -120,7 +120,7 @@ Dingen die niet alleen voor deze tool gelden. Na een test horen ze in de kennisb
 
 Volgens Marks volgorde (B12): eerst structuur en templates, dan manifest, dan textures, dan de handling-editor.
 
-1. **Bronnen** (geen dev-server nodig): Q-M12, Q-A5, Q-H11, Q-M20. Klaar op 21 okt: Q-T1, Q-M1, Q-M10, Q-S9; deels Q-S3, Q-S4, Q-S10, Q-T7.
+1. **Bronnen** (geen dev-server nodig): Q-M12, Q-A5, Q-M20. Klaar op 21 okt: Q-T1, Q-M1, Q-M10, Q-S9; deels Q-S3, Q-S4, Q-S10, Q-T7. Klaar op 23 okt: Q-H11.
 2. **Indeling kiezen** (B24, B26) en het **testpakket** opbouwen ([test_pack.md](test_pack.md)), te beginnen met `vt_00_baseline` in de gekozen indeling.
 3. **Structuur- en meta-tests** (dev-server, met client): Q-S4 in-game, Q-S5, Q-S6 (kan nu al: Lore en lds draaien allebei), Q-S8 (minimale set), Q-S13, Q-M15, Q-M16, Q-M9, Q-M14, Q-M18; daarna Q-M2, Q-M3, Q-M4, Q-M19.
 4. **Manifest-tests**: Q-S3 in-game, Q-S7, Q-S12; architectuur Q-A1 en Q-A2 (één tool of twee, B3).
