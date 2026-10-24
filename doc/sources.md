@@ -59,9 +59,9 @@ Gelezen op 21 okt 2026 (zelfde commit), voor de structuur, het manifest en de te
 | Bron | Waarvoor | Status |
 |------|----------|--------|
 | [Eddlm Handling Tools (web)](https://eddlm.github.io/Handling-Tools/handling) en [broncode](https://github.com/Eddlm/Handling-Tools) | velden, eenheden, min/max; Mark wil "alles wat de website heeft" | ranges overgenomen in `docs/plan.md` §9 |
-| [carmineos/fivem-handling-editor](https://github.com/carmineos/fivem-handling-editor) | bestaande in-game editor | nog niet bekeken (Q-H11) |
-| [STACHY225/BabiczHandlingEditor](https://github.com/STACHY225/BabiczHandlingEditor) | bestaande editor | nog niet bekeken (Q-H11) |
-| [kerminal/vehicleDebug](https://github.com/kerminal/vehicleDebug) | debug-tool | nog niet bekeken (Q-H11) |
+| [carmineos/fivem-handling-editor](https://github.com/carmineos/fivem-handling-editor) | bestaande in-game editor (C#, MIT); sync met decorators, bereiken per veld in `HandlingInfo.xml` | bekeken op 23 okt 2026 (Q-H11), ook de branch `rework` |
+| [STACHY225/BabiczHandlingEditor](https://github.com/STACHY225/BabiczHandlingEditor) | bestaande editor (Lua, **AGPL-3.0**: geen code overnemen); globaal schrijven en opnieuw spawnen | bekeken op 23 okt 2026 (Q-H11); Marks kopie staat in `F:\scripts` |
+| [kerminal/vehicleDebug](https://github.com/kerminal/vehicleDebug) | debug-tool (Lua, MIT); `ModifyVehicleTopSpeed` na elke wijziging, meten van snelheid | bekeken op 23 okt 2026 (Q-H11) |
 | [DriveV FiveM-port](https://github.com/Weilher420/DriveV_Fivem_port) | realistische handling voor alle vanilla-voertuigen; staat in `research/DriveV` | bekeken (README in `research/DriveV`) |
 
 ## Omzetten en uitpakken (community)

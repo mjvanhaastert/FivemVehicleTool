@@ -196,3 +196,10 @@ Het **terugschrijven** van een `.ytd` is dus nooit geprobeerd. Dat blijft de ech
 **Relevantie:** laag. Alleen ideeën (snelle admin-acties, een schademodule), geen code. **Niet tegelijk draaien met handling-tests**, want het verandert koppel en besturing.
 
 **Advies:** uit de projectmap halen, of in `research/` zetten met een notitie over de licentie.
+
+---
+
+## Kopieën in `F:\scripts` (nagekeken op 23 okt 2026)
+
+- `F:\scripts\VehicleEditor` is dezelfde map als `archive/` in de projectmap: 1.577 bestanden met dezelfde namen en groottes. Alleen `archive/README.md` is nieuw. Er staat dus niets in dat hier ontbreekt.
+- `F:\scripts\BabiczHandlingEditor` is BabiczHandlingEditor 1.1.0 (upstream commit `a3bb5e9`, 17 sep 2024, **AGPL-3.0**) met Marks debugregels van 13 juli 2025. Wat erin zit, staat in [handling.md](handling.md#bestaande-editors-om-van-te-leren).

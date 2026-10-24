@@ -268,7 +268,38 @@ Marks eigen eerdere editor: resource `VehicleHandlingEditor` 1.0.0, auteur Man1C
 
 ## Bestaande editors om van te leren
 
-[carmineos/fivem-handling-editor](https://github.com/carmineos/fivem-handling-editor), [BabiczHandlingEditor](https://github.com/STACHY225/BabiczHandlingEditor), [kerminal/vehicleDebug](https://github.com/kerminal/vehicleDebug): nog niet bekeken (Q-H11).
+Q-H11, bekeken op 23 okt 2026: de code van drie open editors gelezen. Label `community` (andermans code, niet zelf getest), tenzij er iets anders staat.
+
+| Editor | Licentie | Laatste commit | Wat | Sync | Grenzen |
+|--------|----------|----------------|-----|------|---------|
+| [BabiczHandlingEditor](https://github.com/STACHY225/BabiczHandlingEditor) 1.1.0 | **AGPL-3.0** | 17 sep 2024 | Lua en een HTML-NUI. `/handling <handlingName>`, daarna LSHIFT. 47 velden van `CHandlingData` | geen | geen |
+| [carmineos/fivem-handling-editor](https://github.com/carmineos/fivem-handling-editor) | MIT | `master` 9 aug 2019, branch `rework` 26 jun 2020 | C# met MenuAPI (F7). Per veld min, max en uitleg in `HandlingInfo.xml`. Presets uit een server-XML en lokaal in KVP | decorators; elke client past ze toe binnen 150 m | per veld, in te stellen |
+| [kerminal/vehicleDebug](https://github.com/kerminal/vehicleDebug) 1.1.0 | MIT | 22 nov 2025 | Lua en een NUI (rechter Alt). 46 velden met uitleg. Meet topsnelheid, acceleratie en vertraging | geen | geen |
+
+**Licentie.** Babicz is AGPL-3.0. Code daaruit in onze tool maakt de hele tool AGPL: wie hem krijgt, ook een koper, heeft recht op de broncode. Ideeën overnemen mag, code kopiëren niet. carmineos en vehicleDebug zijn MIT: code mag, met hun copyright-regel erbij. Marks oude editor (`old/oldversion`) bevat geen code van Babicz, alleen hetzelfde idee: globaal `SetHandlingFloat` en opnieuw spawnen (gezocht op o.a. `CloneVehicle`, `RoundValue` en `execCommand`). `tested` (gelezen, 23 okt)
+
+**Wat de drie bevestigen of toevoegen**
+
+- **Sommige velden werken pas na een extra stap** (Q-H3, Q-H9). vehicleDebug roept na elke wijziging `ModifyVehicleTopSpeed(veh, 1.0)` aan, met als commentaar "needed for some values to work". Dat klopt met de native-docs. carmineos meldt dat sommige velden niets doen, en dat andere pas werken als de auto een stukje rijdt of schade krijgt. Babicz lost het op met globaal schrijven en opnieuw spawnen. Zonder `handlingName` waarschuwt hij: "some values may not work".
+- **Sync (Q-H2, Q-H12): carmineos doet al wat wij met state bags willen.** Per gewijzigd veld zet hij een decorator op het voertuig, plus `<veld>_def` met de originele waarde. Elke client loopt elke 1000 ms de voertuigen binnen 150 m langs en zet de waarden met `SetVehicleHandling*`. Elke client moet het dus zelf toepassen. Met de originele waarde op het voertuig kan iedereen terugzetten en vergelijken (F-A4, F-A5). Decorators zijn de oude vorm; wij nemen een state bag (Q-H2).
+- **`handlingName` invoeren** (Q-M8). Babicz laat de gebruiker de naam typen, omdat die per voertuig alleen als hash te lezen is. Idee voor ons: de server bouwt een tabel van hash naar naam uit alle `handling.meta`'s van de resources (`LoadResourceFile`) en de vanilla-lijst in `data/`. `aanname`
+- **Opnieuw spawnen zonder verlies.** Babicz' `CloneVehicle` (de eigenschappen komen uit ESX) bewaart: kenteken en kentekenstijl, schade aan carrosserie en motor, brandstof, vuil, kleuren (ook RGB, parelmoer en velgkleur), wieltype, raamtint, neon (aan en kleur), extra's 0–12, bandenrook, mods 0–46 met turbo, xenon en rook, en de livery (mod 48 plus `SetVehicleLivery`). Vooraf `SetVehicleModKit(veh, 0)`. Niet bewaard: passagiers, deuken, deuren, ramen en banden, xenon-kleur, dak-livery, interieur- en dashboardkleur, en de mod-variatie (custom tyres). Het nieuwe voertuig krijgt ook een nieuw net-ID, dus scripts voor sleutels, brandstof of garage raken het kwijt. Dit is nodig als een veld alleen bij het spawnen werkt (Q-H3).
+- **Veldnamen (Q-H15).** De lijst van carmineos (56 regels, waarvan 50 getallen; bron handling.dat en de GTAMods-wiki) heeft in `CHandlingData` ook `fWeaponDamageScaledToVehHealthMult`, `fPopUpLightRotation`, `fDownforceModifier`, `fRocketBoostCapacity` en `fBoostMaxSpeed`, elk met een bereik. `fPetrolConsumptionRate`, dat Babicz leest, staat er niet in. Babicz schrijft `fDownForceModifier` en zette die regel uit, "apparently this value does not exist on some vehicles": dat is de hoofdletter (zie "Namen en klassen"). Nog testen door de lijst langs te lopen en op "No such field" te letten.
+- **Bereiken per veld (Q-H4, Q-H5).** carmineos geeft per veld een min en max die op de uitersten van vanilla lijken. Bijvoorbeeld `fInitialDriveMaxFlatVel` 10–328,6, `fInitialDriveForce` 0–18, `fSteeringLock` 20–55, `fTractionCurveLateral` 1–120, `fMass` 100–60.000, `fPercentSubmerged` 45–200 en `fSuspensionRaise` −0,085–0,35. Bruikbaar als tweede mening tot onze eigen meting op build 3889. Een `fInitialDriveMaxFlatVel` tot 328,6 past bij de meta-eenheden (K9, Q-H9), niet bij "0–200 m/s".
+- **`nInitialDriveGears` (Q-H14).** carmineos zette dit veld uit: "wrong type in the ExtraNative" (2019). Testen of dat nog zo is.
+- **Stapgrootte.** Babicz heeft per veld een stap voor de knoppen + en −. Een aantal stappen is groter dan het hele bereik: 1,0 bij `fSuspensionUpperLimit`, `fSuspensionLowerLimit`, `fSuspensionRaise`, de bias-velden en de rolhoogtes. carmineos gebruikt één stap van 0,01. Beter: per veld een stap als deel van het normale bereik.
+- **Export en klembord (F-A6, Q-H8).** Babicz en vehicleDebug exporteren alleen `fMass` t/m `nMonetaryValue`: geen vlaggen, geen `AIHandling` en geen `SubHandlingData`. Beide kopiëren via een verborgen `textarea` en `document.execCommand("copy")`. Dat werkt dus in de NUI van FiveM (twee bronnen). Babicz schrijft 15 decimalen, met de ruis van float32 (zoals 0,30000001192093); vehicleDebug kapt af. De volgorde in het template van Babicz is een aanwijzing voor de vanilla-volgorde; nakijken tegen een vanilla-bestand.
+- **Meten (F-A5).** vehicleDebug houdt de hoogste snelheid (mph), acceleratie en vertraging bij, uit een buffer met snelheden. Met een knop "Reset Stats".
+- **Rijden met de editor open.** vehicleDebug zet `SetNuiFocusKeepInput(true)`: je stuurt terwijl je waarden aanpast.
+
+**Fouten in Babicz om te vermijden**
+
+- De UI stuurt alleen waarden die "waar" zijn (`if(value)`). Een 0 kun je niet invoeren, ook niet waar 0 klopt (`fDriveBiasFront` 0 = achterwielaandrijving).
+- Knoppen zonder werking: `strModelFlags` (twee keer), `strHandlingFlags` en `fDownForceModifier` staan in de HTML, maar niet in de Lua. `fPopUpLightRotation` en `fPetrolConsumptionRate` worden gelezen, maar niet getoond.
+- Geen grenzen en geen controle: `Number()` neemt ook `1e9`.
+- Het commando vraagt ACE `command.handling`, maar daarna opent LSHIFT de editor zonder nieuwe check.
+
+**Marks kopie** in `F:\scripts\BabiczHandlingEditor` is upstream 1.1.0 (commit `a3bb5e9`) plus debugregels van 13 juli 2025. Eén daarvan (`'handlingName: '..handlingName`) geeft een fout bij elke wijziging van een float als je geen `handlingName` meegaf. `tested` (gelezen, diff tegen upstream)
 
 `vehiclehandler/` in onze map is van een derde (QuantumMalice, GPL-3.0, vereist ox_lib) en gaat over schade en reparatie, niet over handling. Niet tegelijk laten draaien met handling-tests: het verlaagt het koppel bij motorschade en zet besturing uit bij kantelen. Zie [inventory.md](inventory.md).
 
